@@ -1,6 +1,6 @@
 #!/bin/bash
-# Python development environment setup script
-# Part of Enhanced Terminal Environment
+# Fixed Python development environment setup script
+# Part of Enhanced Terminal Environment - Updated for macOS PEP 668 compliance
 
 set -e
 
@@ -10,40 +10,31 @@ YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Detect OS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macOS"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="Linux"
+echo -e "${BLUE}Setting up Python development environment (PEP 668 compliant)...${NC}"
+
+# Install Python and related tools
+if ! brew list python@3.11 &>/dev/null; then
+    echo -e "${BLUE}Installing Python 3.11 via Homebrew...${NC}"
+    brew install python@3.11
 else
-    echo -e "${RED}Unsupported operating system: $OSTYPE${NC}"
-    exit 1
+    echo -e "${GREEN}Python 3.11 already installed.${NC}"
 fi
 
-echo -e "${BLUE}Setting up Python development environment...${NC}"
-
-# Install Python and related tools based on OS
-if [[ "$OS" == "macOS" ]]; then
-    # Check if Python is installed via Homebrew
-    if ! brew list python@3.11 &>/dev/null; then
-        echo -e "${BLUE}Installing Python 3.11 via Homebrew...${NC}"
-        brew install python@3.11
-    else
-        echo -e "${GREEN}Python 3.11 already installed.${NC}"
-    fi
+# Install pipx for managing Python tools
+if ! command -v pipx &> /dev/null; then
+    echo -e "${BLUE}Installing pipx...${NC}"
+    brew install pipx
+    pipx ensurepath
     
-elif [[ "$OS" == "Linux" ]]; then
-    # Install Python and development tools
-    echo -e "${BLUE}Installing Python and development tools...${NC}"
-    sudo apt update
-    sudo apt install -y python3 python3-pip python3-venv python3-dev build-essential
+    # Add pipx to PATH if not already
+    if [[ -z $(grep -r "pipx" ~/.zshrc) ]]; then
+        echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
+    fi
+else
+    echo -e "${GREEN}pipx already installed.${NC}"
 fi
 
-# Ensure pip is up to date (in user space to avoid system conflicts)
-echo -e "${BLUE}Updating pip in user space...${NC}"
-python3 -m pip install --user --upgrade pip
-
-# Install Poetry
+# Install Poetry using the official installer (better than pipx for Poetry)
 if ! command -v poetry &>/dev/null; then
     echo -e "${BLUE}Installing Poetry (Python package manager)...${NC}"
     curl -sSL https://install.python-poetry.org | python3 -
@@ -57,48 +48,45 @@ else
     poetry self update
 fi
 
-# Create a virtual environment for development tools
-VENV_DIR="$HOME/.python-dev-env"
-echo -e "${BLUE}Creating Python virtual environment for development tools at $VENV_DIR...${NC}"
-python3 -m venv "$VENV_DIR"
+# Install essential Python development tools using pipx
+echo -e "${BLUE}Installing essential Python development tools...${NC}"
 
-# Install essential Python packages in the virtual environment
-echo -e "${BLUE}Installing essential Python development tools in virtual environment...${NC}"
-source "$VENV_DIR/bin/activate"
-pip install \
-    ipython \
-    black \
-    pylint \
-    flake8 \
-    mypy \
-    pytest \
-    pytest-cov \
-    httpie \
-    requests \
-    virtualenv \
-    pipenv
-deactivate
+# List of tools to install
+PYTHON_TOOLS=(
+    "ipython"
+    "black"
+    "flake8"
+    "pylint"
+    "mypy"
+    "pytest"
+    "httpie"
+    "virtualenv"
+)
 
-# Create activation script for development tools
-ACTIVATE_SCRIPT="$HOME/.local/bin/pydev"
-mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
-cat > "$ACTIVATE_SCRIPT" << 'EOF'
-#!/bin/bash
-# Activate Python development environment
-source "$HOME/.python-dev-env/bin/activate"
-echo "Python development environment activated."
-echo "Type 'deactivate' to exit."
-EOF
-chmod +x "$ACTIVATE_SCRIPT"
+# Install each tool if not already installed
+for tool in "${PYTHON_TOOLS[@]}"; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo -e "${BLUE}Installing $tool...${NC}"
+        pipx install "$tool"
+    else
+        echo -e "${GREEN}$tool already installed, skipping...${NC}"
+    fi
+done
+
+# Install pytest-cov as a pytest plugin
+if pipx list | grep -q "pytest"; then
+    echo -e "${BLUE}Adding pytest-cov plugin to pytest...${NC}"
+    pipx inject pytest pytest-cov
+fi
 
 # Create standard Python project template directory
 TEMPLATE_DIR="$HOME/.local/share/python-templates"
 mkdir -p "$TEMPLATE_DIR"
 
-# Create a basic Python project template
+# Create a basic Python project template with updated approach
 cat > "$TEMPLATE_DIR/basic_project.sh" << 'EOL'
 #!/bin/bash
-# Basic Python project template generator
+# Basic Python project template generator - PEP 668 compliant
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: pyproject projectname"
@@ -189,7 +177,7 @@ This software is provided "as is", without warranty of any kind, express or impl
 This project is a work in progress and may contain bugs or incomplete features. Users are encouraged to report any issues they encounter.
 EOF
 
-# Create pyproject.toml
+# Create pyproject.toml (modern approach instead of setup.py)
 cat > "${PROJECT_NAME}/pyproject.toml" << EOF
 [build-system]
 requires = ["setuptools>=42", "wheel"]
@@ -293,14 +281,11 @@ if [[ -z $(grep -r "pyproject()" ~/.zshrc) ]]; then
 pyproject() {
     $HOME/.local/share/python-templates/basic_project.sh "$@"
 }
-
-# Python development environment activation
-alias pydev="source $HOME/.local/bin/pydev"
 EOL
 fi
 
 echo -e "${GREEN}Python environment setup complete!${NC}"
 echo -e "${YELLOW}New commands available:${NC}"
 echo -e "  ${GREEN}pyproject${NC} - Create a new Python project with virtual environment"
-echo -e "  ${GREEN}pydev${NC} - Activate the Python development tools environment"
+echo -e "  ${GREEN}pipx${NC} - Install and run Python applications in isolated environments"
 echo -e "${YELLOW}Restart your shell or run 'source ~/.zshrc' to use the new commands${NC}"
