@@ -32,18 +32,16 @@ if [[ "$OS" == "macOS" ]]; then
         echo -e "${GREEN}Python 3.11 already installed.${NC}"
     fi
     
-    # Ensure pip is up to date
-    python3 -m pip install --upgrade pip
-    
 elif [[ "$OS" == "Linux" ]]; then
     # Install Python and development tools
     echo -e "${BLUE}Installing Python and development tools...${NC}"
     sudo apt update
     sudo apt install -y python3 python3-pip python3-venv python3-dev build-essential
-    
-    # Ensure pip is up to date
-    python3 -m pip install --upgrade pip
 fi
+
+# Ensure pip is up to date (in user space to avoid system conflicts)
+echo -e "${BLUE}Updating pip in user space...${NC}"
+python3 -m pip install --user --upgrade pip
 
 # Install Poetry
 if ! command -v poetry &>/dev/null; then
@@ -59,9 +57,15 @@ else
     poetry self update
 fi
 
-# Install essential Python packages
-echo -e "${BLUE}Installing essential Python development tools...${NC}"
-python3 -m pip install --user \
+# Create a virtual environment for development tools
+VENV_DIR="$HOME/.python-dev-env"
+echo -e "${BLUE}Creating Python virtual environment for development tools at $VENV_DIR...${NC}"
+python3 -m venv "$VENV_DIR"
+
+# Install essential Python packages in the virtual environment
+echo -e "${BLUE}Installing essential Python development tools in virtual environment...${NC}"
+source "$VENV_DIR/bin/activate"
+pip install \
     ipython \
     black \
     pylint \
@@ -73,6 +77,19 @@ python3 -m pip install --user \
     requests \
     virtualenv \
     pipenv
+deactivate
+
+# Create activation script for development tools
+ACTIVATE_SCRIPT="$HOME/.local/bin/pydev"
+mkdir -p "$(dirname "$ACTIVATE_SCRIPT")"
+cat > "$ACTIVATE_SCRIPT" << 'EOF'
+#!/bin/bash
+# Activate Python development environment
+source "$HOME/.python-dev-env/bin/activate"
+echo "Python development environment activated."
+echo "Type 'deactivate' to exit."
+EOF
+chmod +x "$ACTIVATE_SCRIPT"
 
 # Create standard Python project template directory
 TEMPLATE_DIR="$HOME/.local/share/python-templates"
@@ -92,13 +109,17 @@ PROJECT_NAME="$1"
 mkdir -p "$PROJECT_NAME"
 cd "$PROJECT_NAME"
 
+# Create virtual environment
+python3 -m venv venv
+echo "Created virtual environment at ./venv"
+
 # Create project structure
-mkdir -p "$PROJECT_NAME/tests"
+mkdir -p "${PROJECT_NAME}/tests"
 
 # Create main module
-mkdir -p "$PROJECT_NAME/$PROJECT_NAME"
-touch "$PROJECT_NAME/$PROJECT_NAME/__init__.py"
-cat > "$PROJECT_NAME/$PROJECT_NAME/main.py" << 'EOF'
+mkdir -p "${PROJECT_NAME}/${PROJECT_NAME}"
+touch "${PROJECT_NAME}/${PROJECT_NAME}/__init__.py"
+cat > "${PROJECT_NAME}/${PROJECT_NAME}/main.py" << 'EOF'
 def main():
     """Main entry point of the application."""
     print("Hello, World!")
@@ -108,7 +129,7 @@ if __name__ == "__main__":
 EOF
 
 # Create test file
-cat > "$PROJECT_NAME/tests/test_main.py" << 'EOF'
+cat > "${PROJECT_NAME}/tests/test_main.py" << EOF
 import pytest
 from ${PROJECT_NAME}.main import main
 
@@ -119,7 +140,7 @@ def test_main():
 EOF
 
 # Create README
-cat > "$PROJECT_NAME/README.md" << EOF
+cat > "${PROJECT_NAME}/README.md" << EOF
 # $PROJECT_NAME
 
 A Python project.
@@ -127,11 +148,12 @@ A Python project.
 ## Installation
 
 \`\`\`bash
-# With Poetry
-poetry install
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
 
-# Or with pip
-pip install -e .
+# Install development dependencies
+pip install -e ".[dev]"
 \`\`\`
 
 ## Usage
@@ -168,34 +190,50 @@ This project is a work in progress and may contain bugs or incomplete features. 
 EOF
 
 # Create pyproject.toml
-cat > "$PROJECT_NAME/pyproject.toml" << EOF
-[tool.poetry]
+cat > "${PROJECT_NAME}/pyproject.toml" << EOF
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "$PROJECT_NAME"
 version = "0.1.0"
 description = "A Python project"
-authors = ["Joshua Michael Hall <your.email@example.com>"]
 readme = "README.md"
+authors = [
+    {name = "Joshua Michael Hall", email = "your.email@example.com"}
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
+dependencies = [
+    # Add runtime dependencies here
+]
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.0"
-black = "^23.0"
-pylint = "^2.17"
-mypy = "^1.4"
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "pylint>=2.17.0",
+    "mypy>=1.4.0",
+]
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+"Homepage" = "https://github.com/joshuamichaelhall/${PROJECT_NAME}"
+"Bug Tracker" = "https://github.com/joshuamichaelhall/${PROJECT_NAME}/issues"
 
-[tool.poetry.scripts]
-$PROJECT_NAME = "${PROJECT_NAME}.main:main"
+[project.scripts]
+${PROJECT_NAME} = "${PROJECT_NAME}.main:main"
 EOF
 
-# Initialize Git repository
-git init
-cat > "$PROJECT_NAME/.gitignore" << 'EOF'
+# Create .gitignore
+cat > "${PROJECT_NAME}/.gitignore" << 'EOF'
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -229,7 +267,19 @@ htmlcov/
 .DS_Store
 EOF
 
-echo "Python project $PROJECT_NAME created successfully!"
+# Activate the virtual environment and install dependencies
+cd "${PROJECT_NAME}"
+source venv/bin/activate
+pip install -e ".[dev]"
+deactivate
+
+# Initialize Git repository
+git init
+git add .
+git commit -m "Initial project structure"
+
+echo "Python project $PROJECT_NAME created successfully with virtual environment!"
+echo "To activate the environment, run: cd ${PROJECT_NAME} && source venv/bin/activate"
 EOL
 
 # Make template executable
@@ -243,8 +293,14 @@ if [[ -z $(grep -r "pyproject()" ~/.zshrc) ]]; then
 pyproject() {
     $HOME/.local/share/python-templates/basic_project.sh "$@"
 }
+
+# Python development environment activation
+alias pydev="source $HOME/.local/bin/pydev"
 EOL
 fi
 
 echo -e "${GREEN}Python environment setup complete!${NC}"
+echo -e "${YELLOW}New commands available:${NC}"
+echo -e "  ${GREEN}pyproject${NC} - Create a new Python project with virtual environment"
+echo -e "  ${GREEN}pydev${NC} - Activate the Python development tools environment"
 echo -e "${YELLOW}Restart your shell or run 'source ~/.zshrc' to use the new commands${NC}"
