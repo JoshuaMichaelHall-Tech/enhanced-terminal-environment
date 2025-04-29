@@ -1,0 +1,188 @@
+[user]
+	name = Joshua Michael Hall
+	email = your.email@example.com
+
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+	whitespace = trailing-space,space-before-tab
+	pager = less -FRX
+
+[init]
+	defaultBranch = main
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+
+[pull]
+	rebase = false
+
+[push]
+	default = simple
+	followTags = true
+
+[fetch]
+	prune = true
+
+[diff]
+	tool = vimdiff
+	renames = copies
+	mnemonicprefix = true
+	compactionHeuristic = true
+
+[difftool]
+	prompt = false
+
+[merge]
+	tool = vimdiff
+	conflictstyle = diff3
+	ff = only
+
+[mergetool]
+	prompt = false
+	keepBackup = false
+
+[help]
+	autocorrect = 1
+
+[alias]
+	# Basics
+	s = status
+	c = commit
+	cm = commit -m
+	co = checkout
+	br = branch
+	cp = cherry-pick
+	
+	# Logging
+	l = log --oneline --decorate --graph --date=short
+	ll = log --oneline --decorate --graph --all
+	ld = log --pretty=format:"%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)[%an]%C(reset) %s%C(bold red)%d%C(reset)" --graph --date=short
+	
+	# Detailed status
+	st = status -sb
+	
+	# Show modified files
+	ls = ls-files -m
+	
+	# Show untracked files
+	ls-untracked = ls-files --others --exclude-standard
+	
+	# Show all files
+	ls-all = ls-files
+	
+	# Show ignored files
+	ls-ignored = ls-files --others --ignored --exclude-standard
+	
+	# Show staged files
+	ls-staged = diff --name-only --cached
+	
+	# Show what was done in the last commit
+	last = log -1 HEAD --stat
+	
+	# Amend previous commit
+	amend = commit --amend
+	
+	# Undo the last commit but keep the changes
+	undo = reset HEAD~1 --soft
+	
+	# Discard all local changes
+	discard = checkout -- .
+	
+	# Show who is the author of each line in a file
+	blame = blame -w -C -C -C
+	
+	# Short status
+	sts = status -s
+	
+	# Remove all deleted files
+	rm-deleted = !git ls-files --deleted -z | xargs -0 git rm
+	
+	# Find in files
+	grep = grep -Ii
+	
+	# List branches sorted by last modified
+	brs = "!git for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'"
+	
+	# List aliases
+	aliases = !git config --get-regexp 'alias.*' | sort
+	
+	# Create a backup of a branch
+	backup = !git branch "backup/$(git symbolic-ref --short HEAD)-$(date +%Y%m%d%H%M%S)"
+	
+	# Interactive rebase
+	ri = rebase -i
+	
+	# Stash changes
+	save = stash save
+	
+	# Apply stashed changes
+	pop = stash pop
+	
+	# Show stash
+	stashes = stash list
+	
+	# Show stash diff
+	stash-diff = stash show -p
+	
+	# Create a new empty branch
+	empty = "!f() { git checkout --orphan $1 && git reset --hard && git commit --allow-empty -m \"Initial commit\"; }; f"
+	
+	# List contributors with number of commits
+	contributors = shortlog -sn
+	
+	# Find branches containing commit
+	find-branch = "!f() { git branch -a --contains $1; }; f"
+	
+	# Find tags containing commit
+	find-tag = "!f() { git describe --always --contains $1; }; f"
+	
+	# Find commits by source code
+	find-code = "!f() { git log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --decorate --date=relative -S$1; }; f"
+	
+	# Find commits by commit message
+	find-message = "!f() { git log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --decorate --date=relative --grep=$1; }; f"
+	
+	# Show remote repositories
+	remotes = remote -v
+
+[credential]
+	helper = cache --timeout=3600
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[commit]
+	template = ~/.gitmessage
+	verbose = true
+
+[rebase]
+	autosquash = true
+	autostash = true
+
+[stash]
+	showPatch = true
+
+[url "git@github.com:"]
+	insteadOf = "gh:"
+	pushInsteadOf = "github:"
+	pushInsteadOf = "git://github.com/"
+
+[url "git://github.com/"]
+	insteadOf = "github:"
+
+[url "git@gist.github.com:"]
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
+
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
