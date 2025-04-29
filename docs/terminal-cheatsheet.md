@@ -285,18 +285,17 @@
 | `createdb dbname` | Create database |
 | `dropdb dbname` | Drop database |
 
-### MongoDB
-| Command | Description |
+| Description |
 |---------|-------------|
-| `mongo` | Start MongoDB shell |
-| `show dbs` | List databases |
-| `use dbname` | Switch database |
-| `show collections` | List collections |
-| `db.collection.find()` | Query documents |
-| `db.collection.insertOne()` | Insert document |
-| `db.collection.updateOne()` | Update document |
-| `db.collection.deleteOne()` | Delete document |
-| `exit` | Exit shell |
+| `atlas auth login` | Authenticate with MongoDB Atlas |
+| `atlas clusters list` | List available clusters |
+| `atlas clusters describe <name>` | Show details of a cluster |
+| `atlas clusters connect <name>` | Connect to a cluster |
+| `atlas databases list` | List databases |
+| `atlas databases users list` | List database users |
+| `atlas databases users create` | Create a database user |
+| `atlas projects list` | List all projects |
+| `atlas logs download` | Download MongoDB Atlas logs |
 
 ## HTTP Client Tools
 

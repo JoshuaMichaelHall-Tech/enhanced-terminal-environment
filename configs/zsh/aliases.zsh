@@ -207,9 +207,12 @@ alias pgstart="pg_ctl -D /usr/local/var/postgres start"
 alias pgstop="pg_ctl -D /usr/local/var/postgres stop"
 alias pgstatus="pg_ctl -D /usr/local/var/postgres status"
 
-# MongoDB
-alias mgs="mongod --dbpath ~/data/db"
-alias mgc="mongo"
+# MongoDB Atlas CLI
+alias atl="atlas"
+alias atlc="atlas clusters"
+alias atld="atlas databases"
+alias atlp="atlas projects"
+alias atll="atlas logs"
 
 #-------------------------------------------------------------
 # Network Aliases

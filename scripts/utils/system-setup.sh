@@ -69,7 +69,7 @@ if [[ "$OS" == "macOS" ]]; then
     
     # Install database tools
     echo -e "${BLUE}Installing database tools...${NC}"
-    brew install postgresql@14 mongodb-community
+    brew install postgresql@14 mongodb-atlas-cli
     
     # Install Docker
     echo -e "${BLUE}Installing Docker...${NC}"

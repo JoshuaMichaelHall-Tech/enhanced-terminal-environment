@@ -74,7 +74,7 @@ The script will install and configure the necessary tools with sensible defaults
 - Linting and formatting tools
 
 ### 3. Data & Infrastructure
-- PostgreSQL and MongoDB CLIs
+- PostgreSQL and MongoDB Atlas CLI
 - Docker and Docker Compose
 - AWS CLI, Terraform, and Ansible
 - Monitoring tools (htop, glances)
