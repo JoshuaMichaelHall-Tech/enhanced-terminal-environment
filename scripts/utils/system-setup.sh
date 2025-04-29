@@ -61,7 +61,7 @@ if [[ "$OS" == "macOS" ]]; then
         fd \
         jq \
         bat \
-        exa \
+        eza \
         htop \
         gh \
         wget \

@@ -19,13 +19,13 @@ alias l="ls -lah"
 alias ll="ls -lh"
 alias la="ls -lAh"
 
-# Use exa for listing if available (modern replacement for ls)
-if command -v exa &> /dev/null; then
-  alias ls="exa"
-  alias l="exa -la --git"
-  alias ll="exa -l --git"
-  alias la="exa -la --git"
-  alias lt="exa -T --git --level=2"
+# Use eza for listing if available (modern replacement for ls)
+if command -v eza &> /dev/null; then
+  alias ls="eza"
+  alias l="eza -la --git"
+  alias ll="eza -l --git"
+  alias la="eza -la --git"
+  alias lt="eza -T --git --level=2"
 fi
 
 # Directory operations
