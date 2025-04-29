@@ -248,22 +248,31 @@ elif [[ "$OS" == "Linux" ]]; then
         echo -e "${GREEN}AWS CLI already installed.${NC}"
     fi
     
-    # Install OpenTofu (Terraform alternative)
-    if ! command -v terraform &> /dev/null && ! command -v tofu &> /dev/null; then
-        echo -e "${BLUE}Installing OpenTofu (Terraform alternative)...${NC}"
-        # Add OpenTofu repository
-        wget -O opentofu.deb https://github.com/opentofu/opentofu/releases/download/v1.6.0/opentofu_1.6.0_amd64.deb
-        sudo dpkg -i opentofu.deb
-        rm opentofu.deb
-        
-        # Create terraform alias for compatibility
-        echo 'alias terraform="tofu"' >> ~/.zsh/aliases.zsh
-        
-        echo -e "${YELLOW}Note: Using OpenTofu as Terraform alternative due to license changes${NC}"
-        echo -e "${YELLOW}A 'terraform' alias has been created for compatibility${NC}"
+# Install OpenTofu
+if ! command -v tofu &> /dev/null; then
+    echo -e "${BLUE}Installing OpenTofu...${NC}"
+    
+    # Download the installer script
+    curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh
+    
+    # Give it execution permissions
+    chmod +x install-opentofu.sh
+    
+    # Run the installer for deb-based systems
+    ./install-opentofu.sh --install-method deb
+    
+    # Remove the installer
+    rm -f install-opentofu.sh
+    
+    # Verify installation
+    if command -v tofu &> /dev/null; then
+        echo -e "${GREEN}OpenTofu installed successfully: $(tofu --version)${NC}"
     else
-        echo -e "${GREEN}Terraform or OpenTofu already installed.${NC}"
+        echo -e "${RED}OpenTofu installation failed.${NC}"
     fi
+else
+    echo -e "${GREEN}OpenTofu already installed: $(tofu --version)${NC}"
+fi
     
     # Install Ansible
     if ! is_installed "ansible"; then
