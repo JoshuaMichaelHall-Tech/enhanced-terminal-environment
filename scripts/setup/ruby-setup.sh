@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ruby development environment setup script
-# Part of Enhanced Terminal Environment
+# Part of Enhanced Terminal Environment - Updated for OS detection
 
 set -e
 
@@ -13,8 +13,10 @@ NC='\033[0m' # No Color
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     OS="macOS"
+    echo -e "${BLUE}Detected macOS system${NC}"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     OS="Linux"
+    echo -e "${BLUE}Detected Linux system${NC}"
 else
     echo -e "${RED}Unsupported operating system: $OSTYPE${NC}"
     exit 1
@@ -27,7 +29,10 @@ if ! command -v rvm &>/dev/null; then
     echo -e "${BLUE}Installing RVM (Ruby Version Manager)...${NC}"
     
     # Install GPG keys
-    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB || {
+        echo -e "${YELLOW}Could not receive GPG keys from primary server, trying alternate...${NC}"
+        gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+    }
     
     # Install RVM
     curl -sSL https://get.rvm.io | bash -s stable
@@ -64,8 +69,6 @@ gem install \
     rubocop \
     solargraph \
     rspec \
-    rails \
-    sinatra \
     rake
 
 # Create standard Ruby project template directory

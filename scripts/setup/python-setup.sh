@@ -1,6 +1,6 @@
 #!/bin/bash
-# Fixed Python development environment setup script
-# Part of Enhanced Terminal Environment - Updated for macOS PEP 668 compliance
+# Python development environment setup script
+# Part of Enhanced Terminal Environment - Updated for OS detection
 
 set -e
 
@@ -10,28 +10,66 @@ YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}Setting up Python development environment (PEP 668 compliant)...${NC}"
+echo -e "${BLUE}Setting up Python development environment...${NC}"
 
-# Install Python and related tools
-if ! brew list python@3.11 &>/dev/null; then
-    echo -e "${BLUE}Installing Python 3.11 via Homebrew...${NC}"
-    brew install python@3.11
-else
-    echo -e "${GREEN}Python 3.11 already installed.${NC}"
-fi
-
-# Install pipx for managing Python tools
-if ! command -v pipx &> /dev/null; then
-    echo -e "${BLUE}Installing pipx...${NC}"
-    brew install pipx
-    pipx ensurepath
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macOS"
+    echo -e "${BLUE}Detected macOS system${NC}"
     
-    # Add pipx to PATH if not already
-    if [[ -z $(grep -r "pipx" ~/.zshrc) ]]; then
-        echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
+    # Install Python via Homebrew on macOS
+    if ! brew list python@3.11 &>/dev/null; then
+        echo -e "${BLUE}Installing Python 3.11 via Homebrew...${NC}"
+        brew install python@3.11
+    else
+        echo -e "${GREEN}Python 3.11 already installed.${NC}"
+    fi
+    
+    # Install pipx for managing Python tools on macOS
+    if ! command -v pipx &> /dev/null; then
+        echo -e "${BLUE}Installing pipx...${NC}"
+        brew install pipx
+        pipx ensurepath
+        
+        # Add pipx to PATH if not already
+        if [[ -z $(grep -r "pipx" ~/.zshrc) ]]; then
+            echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
+        fi
+    else
+        echo -e "${GREEN}pipx already installed.${NC}"
+    fi
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS="Linux"
+    echo -e "${BLUE}Detected Linux system${NC}"
+    
+    # Install Python and related tools on Linux
+    echo -e "${BLUE}Installing Python and related tools...${NC}"
+    sudo apt update
+    
+    # Install Python 3
+    if ! command -v python3 &> /dev/null; then
+        echo -e "${BLUE}Installing Python 3...${NC}"
+        sudo apt install -y python3 python3-dev python3-venv python3-pip
+    else
+        echo -e "${GREEN}Python 3 already installed: $(python3 --version)${NC}"
+    fi
+    
+    # Install pipx for managing Python tools on Linux
+    if ! command -v pipx &> /dev/null; then
+        echo -e "${BLUE}Installing pipx...${NC}"
+        sudo apt install -y python3-pipx
+        pipx ensurepath
+        
+        # Add pipx to PATH if not already
+        if [[ -z $(grep -r "pipx" ~/.zshrc) ]]; then
+            echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
+        fi
+    else
+        echo -e "${GREEN}pipx already installed.${NC}"
     fi
 else
-    echo -e "${GREEN}pipx already installed.${NC}"
+    echo -e "${RED}Unsupported operating system: $OSTYPE${NC}"
+    exit 1
 fi
 
 # Install Poetry using the official installer (better than pipx for Poetry)

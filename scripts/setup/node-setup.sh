@@ -1,6 +1,6 @@
 #!/bin/bash
 # Node.js/JavaScript development environment setup script
-# Part of Enhanced Terminal Environment
+# Part of Enhanced Terminal Environment - Updated for OS detection
 
 set -e
 
@@ -13,8 +13,10 @@ NC='\033[0m' # No Color
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     OS="macOS"
+    echo -e "${BLUE}Detected macOS system${NC}"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     OS="Linux"
+    echo -e "${BLUE}Detected Linux system${NC}"
 else
     echo -e "${RED}Unsupported operating system: $OSTYPE${NC}"
     exit 1
