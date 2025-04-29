@@ -25,16 +25,24 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo -e "${GREEN}Python 3.11 already installed.${NC}"
     fi
     
-    # Install pipx for managing Python tools on macOS
+    # Install pipx for managing Python tools on Linux
     if ! command -v pipx &> /dev/null; then
         echo -e "${BLUE}Installing pipx...${NC}"
-        brew install pipx
-        pipx ensurepath
-        
-        # Add pipx to PATH if not already
-        if [[ -z $(grep -r "pipx" ~/.zshrc) ]]; then
+        # First ensure we have the required dependencies
+        sudo apt install -y python3-venv python3-pip
+    
+        # Install pipx via pip
+        python3 -m pip install --user pipx
+    
+        # Ensure pipx binaries are in PATH
+        python3 -m pipx ensurepath
+    
+        # Add pipx to shell completion if possible
+        if command -v register-python-argcomplete &> /dev/null; then
             echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
-        fi
+       fi
+    
+        echo -e "${GREEN}pipx installed. You may need to restart your shell to use it.${NC}"
     else
         echo -e "${GREEN}pipx already installed.${NC}"
     fi
