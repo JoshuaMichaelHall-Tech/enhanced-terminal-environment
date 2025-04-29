@@ -25,27 +25,28 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo -e "${GREEN}Python 3.11 already installed.${NC}"
     fi
     
-    # Install pipx for managing Python tools on Linux
-    if ! command -v pipx &> /dev/null; then
-        echo -e "${BLUE}Installing pipx...${NC}"
-        # First ensure we have the required dependencies
-        sudo apt install -y python3-venv python3-pip
-    
-        # Install pipx via pip
-        python3 -m pip install --user pipx
-    
-        # Ensure pipx binaries are in PATH
-        python3 -m pipx ensurepath
-    
-        # Add pipx to shell completion if possible
-        if command -v register-python-argcomplete &> /dev/null; then
-            echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
-       fi
-    
-        echo -e "${GREEN}pipx installed. You may need to restart your shell to use it.${NC}"
-    else
-        echo -e "${GREEN}pipx already installed.${NC}"
-    fi
+    # Install pipx using pip
+  if ! command -v pipx &> /dev/null; then
+      echo -e "${BLUE}Installing pipx via pip...${NC}"
+      # Make sure pip is installed and up to date
+      python3 -m pip install --upgrade pip
+      
+      # Install pipx to user directory
+      python3 -m pip install --user pipx
+      
+      # Ensure pipx binaries are in PATH
+      python3 -m pipx ensurepath
+      
+      # Add pipx to shell completion if possible
+      if python3 -c "import importlib.util; print(importlib.util.find_spec('pipx') is not None)" 2>/dev/null | grep -q "True"; then
+          echo 'eval "$(register-python-argcomplete pipx)"' >> ~/.zshrc
+      fi
+      
+      echo -e "${GREEN}pipx installed. You may need to restart your shell to use it.${NC}"
+      echo -e "${YELLOW}If pipx commands aren't recognized after restart, run: python3 -m pipx ensurepath${NC}"
+  else
+      echo -e "${GREEN}pipx already installed.${NC}"
+  fi
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     OS="Linux"
     echo -e "${BLUE}Detected Linux system${NC}"
