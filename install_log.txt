@@ -1,0 +1,65 @@
+Enhanced Terminal Environment Installation Log
+Date: Tue Apr 29 15:12:09 CDT 2025
+User: jmh
+System: Darwin MacBookPro.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:28:23 PDT 2025; root:xnu-11417.101.15~117/RELEASE_X86_64 x86_64
+----------------------------------------
+
+[0;36m[1mLanguage Setup[0m
+[0;36m==================================================[0m
+Which languages would you like to set up? (y/n for each)
+Python: n
+JavaScript/Node.js: n
+Ruby: n
+
+[0;36m[1mInstallation Summary[0m
+[0;36m==================================================[0m
+The following will be installed:
+  - Core environment (shell, Tmux, Neovim, Git)
+
+
+[0;36m[1mSetting up core environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
+Tue Apr 29 15:12:15 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+[0;34mDetected macOS system[0m
+[0;34mCreating configuration directories...[0m
+[0;34mCreating directory: /Users/jmh/.config/nvim[0m
+[0;34mCreating directory: /Users/jmh/.config/tmux[0m
+[0;34mCreating directory: /Users/jmh/.tmux/plugins[0m
+[0;34mCreating directory: /Users/jmh/.zsh[0m
+[0;34mCreating directory: /Users/jmh/.local/bin[0m
+[0;34mCreating directory: /Users/jmh/projects[0m
+[0;34mHomebrew already installed.[0m
+[0;34mInstalling essential tools...[0m
+[0;32mneovim already installed, skipping...[0m
+[0;32mtmux already installed, skipping...[0m
+[0;32mzsh already installed, skipping...[0m
+[0;32mgit already installed, skipping...[0m
+[0;32mripgrep already installed, skipping...[0m
+[0;32mfzf already installed, skipping...[0m
+[0;32mfd already installed, skipping...[0m
+[0;32mjq already installed, skipping...[0m
+[0;32mbat already installed, skipping...[0m
+[0;32meza already installed, skipping...[0m
+[0;32mhtop already installed, skipping...[0m
+[0;32mwget already installed, skipping...[0m
+[0;32mcurl already installed, skipping...[0m
+[0;32mGitHub CLI already installed, skipping...[0m
+[0;34mInstalling database tools...[0m
+[0;32mpostgresql@14 already installed, skipping...[0m
+[0;32mmongodb-atlas-cli already installed, skipping...[0m
+[0;32mDocker already installed, skipping...[0m
+[0;32mHTTPie already installed, skipping...[0m
+[0;34mInstalling cloud tools...[0m
+[0;32mawscli already installed, skipping...[0m
+[0;32mansible already installed, skipping...[0m
+[0;34mInstalling OpenTofu (Terraform alternative)...[0m
+==> Tapping opentofu/opentofu
+Cloning into '/usr/local/Homebrew/Library/Taps/opentofu/homebrew-opentofu'...
+remote: Repository not found.
+fatal: repository 'https://github.com/opentofu/homebrew-opentofu/' not found
+Error: Failure while executing; `git clone https://github.com/opentofu/homebrew-opentofu /usr/local/Homebrew/Library/Taps/opentofu/homebrew-opentofu --origin=origin --template= --config core.fsmonitor=false` exited with 128.
+[0;31mERROR: Core environment setup failed[0m
+[0;31mERROR: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+[0;31mERROR: Installation failed with exit code 1[0m
+[0;31mERROR: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m

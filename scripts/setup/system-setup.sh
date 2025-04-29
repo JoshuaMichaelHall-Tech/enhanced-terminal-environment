@@ -145,21 +145,112 @@ setup_opentofu() {
         log_info "Installing OpenTofu (Terraform alternative)..."
         
         if [[ "$OS" == "macOS" ]]; then
-            # Install via Homebrew
-            run_command "brew install opentofu" "Failed to install OpenTofu via Homebrew"
+            # Try direct homebrew installation
+            if brew install opentofu; then
+                log_success "OpenTofu installed successfully via Homebrew"
+            else
+                log_warning "Homebrew installation failed, trying alternative method..."
+                
+                # Alternative method using the official installer
+                local installer_script="install-opentofu.sh"
+                log_info "Downloading OpenTofu installer..."
+                
+                if curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o "$installer_script"; then
+                    chmod +x "$installer_script"
+                    
+                    log_info "Running OpenTofu installer with brew method..."
+                    if ./"$installer_script" --install-method brew; then
+                        log_success "OpenTofu installed successfully with official installer"
+                    else
+                        log_warning "OpenTofu installation failed, falling back to Terraform..."
+                        
+                        # Install Terraform as fallback
+                        if brew install terraform; then
+                            log_success "Terraform installed successfully"
+                            # Create alias for compatibility
+                            mkdir -p "$HOME/.zsh"
+                            echo 'alias tofu="terraform"' >> "$HOME/.zsh/aliases.zsh"
+                            log_info "Created 'tofu' alias for terraform"
+                        else
+                            log_warning "Both OpenTofu and Terraform installation failed."
+                            log_warning "Continuing without IaC tools. You may need to install them manually."
+                        fi
+                    fi
+                    
+                    # Clean up installer script
+                    rm -f "$installer_script"
+                else
+                    log_warning "Failed to download OpenTofu installer, trying Terraform instead..."
+                    
+                    # Install Terraform as fallback
+                    if brew install terraform; then
+                        log_success "Terraform installed successfully"
+                        # Create alias for compatibility
+                        mkdir -p "$HOME/.zsh"
+                        echo 'alias tofu="terraform"' >> "$HOME/.zsh/aliases.zsh"
+                        log_info "Created 'tofu' alias for terraform"
+                    else
+                        log_warning "Both OpenTofu and Terraform installation failed."
+                        log_warning "Continuing without IaC tools. You may need to install them manually."
+                    fi
+                }
+            fi
         elif [[ "$OS" == "Linux" ]]; then
             # Download and run the installer script
             local installer_script="install-opentofu.sh"
-            run_command "curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o $installer_script" \
-                "Failed to download OpenTofu installer"
-            run_command "chmod +x $installer_script" "Failed to make OpenTofu installer executable"
-            
-            # Run the installer for deb-based systems
-            run_command "sudo ./$installer_script --install-method deb" "OpenTofu installation failed"
-            
-            # Remove the installer
-            rm -f "$installer_script"
+            if curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o "$installer_script"; then
+                chmod +x "$installer_script"
+                
+                # Run the installer for deb-based systems
+                if ./"$installer_script" --install-method deb; then
+                    log_success "OpenTofu installed successfully with official installer"
+                else
+                    log_warning "OpenTofu installation failed, falling back to Terraform..."
+                    
+                    # Try to install Terraform as fallback
+                    if apt-get update && apt-get install -y terraform; then
+                        log_success "Terraform installed successfully"
+                        # Create alias for compatibility
+                        echo 'alias tofu="terraform"' >> "$HOME/.zsh/aliases.zsh"
+                        log_info "Created 'tofu' alias for terraform"
+                    else
+                        log_warning "Both OpenTofu and Terraform installation failed."
+                        log_warning "Continuing without IaC tools. You may need to install them manually."
+                    fi
+                fi
+                
+                # Remove the installer
+                rm -f "$installer_script"
+            else
+                log_warning "Failed to download OpenTofu installer, trying Terraform instead..."
+                
+                # Try to install Terraform as fallback
+                if apt-get update && apt-get install -y terraform; then
+                    log_success "Terraform installed successfully"
+                    # Create alias for compatibility
+                    echo 'alias tofu="terraform"' >> "$HOME/.zsh/aliases.zsh"
+                    log_info "Created 'tofu' alias for terraform"
+                else
+                    log_warning "Both OpenTofu and Terraform installation failed."
+                    log_warning "Continuing without IaC tools. You may need to install them manually."
+                fi
+            fi
         fi
+        
+        # Verify installation
+        if command_exists "tofu"; then
+            log_success "OpenTofu available as command: $(tofu version | head -n1)"
+        elif command_exists "terraform"; then
+            log_success "Terraform installed with 'tofu' alias: $(terraform version | head -n1)"
+        else
+            log_warning "No IaC tool detected. You may need to install OpenTofu or Terraform manually."
+        fi
+    else
+        log_success "OpenTofu already installed: $(tofu version | head -n1)"
+    fi
+    
+    return 0
+}
         
         # Create terraform alias for compatibility if not already exists
         if ! grep -q "alias terraform" "$HOME/.zsh/aliases.zsh" 2>/dev/null; then
