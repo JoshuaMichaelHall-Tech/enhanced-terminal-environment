@@ -1,105 +1,308 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Node.js/JavaScript development environment setup script
-# Part of Enhanced Terminal Environment - Updated for OS detection
+# Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
+# Version: 2.0
 
-set -e
+# Exit on error, undefined variables, and propagate pipe failures
+set -euo pipefail
 
-BLUE='\033[0;34m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+# Define colors for output
+readonly GREEN='\033[0;32m'
+readonly BLUE='\033[0;34m'
+readonly YELLOW='\033[0;33m'
+readonly RED='\033[0;31m'
+readonly NC='\033[0m' # No Color
 
-# Detect OS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macOS"
-    echo -e "${BLUE}Detected macOS system${NC}"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="Linux"
-    echo -e "${BLUE}Detected Linux system${NC}"
-else
-    echo -e "${RED}Unsupported operating system: $OSTYPE${NC}"
+# Script directory (resolving symlinks)
+readonly SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+
+# Log functions for consistent output
+log_info() {
+    echo -e "${BLUE}INFO: $1${NC}"
+}
+
+log_success() {
+    echo -e "${GREEN}SUCCESS: $1${NC}"
+}
+
+log_warning() {
+    echo -e "${YELLOW}WARNING: $1${NC}"
+}
+
+log_error() {
+    echo -e "${RED}ERROR: $1${NC}" >&2
+}
+
+# Error handling function
+handle_error() {
+    log_error "$1"
     exit 1
-fi
+}
 
-echo -e "${BLUE}Setting up Node.js development environment...${NC}"
+# Check if a command exists
+command_exists() {
+    command -v "$1" &> /dev/null
+}
 
-# Install NVM (Node Version Manager)
-if [ ! -d "$HOME/.nvm" ]; then
-    echo -e "${BLUE}Installing NVM (Node Version Manager)...${NC}"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    
-    # Add NVM to shell profile if not already there
-    if [[ -z $(grep -r "NVM_DIR" ~/.zshrc) ]]; then
-        cat >> ~/.zshrc << 'EOL'
+# Setup NVM (Node Version Manager)
+setup_nvm() {
+    # Install NVM if not already installed
+    if [[ ! -d "$HOME/.nvm" ]]; then
+        log_info "Installing NVM (Node Version Manager)..."
+        
+        # Download and run the NVM installer
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash || 
+            handle_error "Failed to install NVM"
+        
+        # Add NVM to shell profile if not already there
+        if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
+            cat >> "$HOME/.zshrc" << 'EOL'
 
 # NVM (Node Version Manager)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 EOL
+        fi
+        
+        # Load NVM for current session
+        export NVM_DIR="$HOME/.nvm"
+        # Use conditional check to ensure the files exist before sourcing them
+        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            # shellcheck disable=SC1090
+            . "$NVM_DIR/nvm.sh"
+        else
+            log_warning "NVM script not found. You may need to restart your shell."
+            return 1
+        fi
+        
+        if [[ -s "$NVM_DIR/bash_completion" ]]; then
+            # shellcheck disable=SC1090
+            . "$NVM_DIR/bash_completion"
+        fi
+    else
+        log_success "NVM already installed."
+        
+        # Ensure NVM is loaded for the current session
+        export NVM_DIR="$HOME/.nvm"
+        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            # shellcheck disable=SC1090
+            . "$NVM_DIR/nvm.sh"
+        else
+            log_warning "NVM script not found. You may need to restart your shell."
+            return 1
+        fi
     fi
     
-    # Load NVM for current session
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    # Verify NVM is properly loaded
+    if ! command_exists nvm; then
+        log_warning "NVM command not found after installation. You may need to restart your shell."
+        log_warning "After restart, run: 'nvm --version' to verify NVM is installed."
+        return 1
+    fi
     
-else
-    echo -e "${GREEN}NVM already installed.${NC}"
-fi
+    return 0
+}
 
-# Install Node.js LTS version
-echo -e "${BLUE}Installing Node.js LTS version...${NC}"
-nvm install --lts
-nvm use --lts
-nvm alias default 'lts/*'
+# Create project templates directory
+create_templates_dir() {
+    local dir="$HOME/.local/share/node-templates"
+    
+    if [[ ! -d "$dir" ]]; then
+        log_info "Creating Node.js templates directory: $dir"
+        mkdir -p "$dir" || handle_error "Failed to create templates directory"
+    fi
+    
+    echo "$dir"
+}
 
-# Install essential global npm packages
-echo -e "${BLUE}Installing essential Node.js development tools...${NC}"
-npm install -g \
-    npm@latest \
-    yarn \
-    typescript \
-    ts-node \
-    eslint \
-    prettier \
-    nodemon \
-    serve \
-    http-server \
-    npm-check-updates
+# Add function to .zshrc if it doesn't exist
+add_function_to_zshrc() {
+    local function_name="$1"
+    local function_path="$2"
+    
+    if ! grep -q "${function_name}()" "$HOME/.zshrc"; then
+        log_info "Adding ${function_name} function to .zshrc"
+        cat >> "$HOME/.zshrc" << EOF
 
-# Create standard Node.js project template directory
-TEMPLATE_DIR="$HOME/.local/share/node-templates"
-mkdir -p "$TEMPLATE_DIR"
+# Node.js project creator function
+${function_name}() {
+    ${function_path} "\$@"
+}
+EOF
+    else
+        log_success "${function_name} function already exists in .zshrc"
+    fi
+}
 
-# Create a basic Node.js project template
-cat > "$TEMPLATE_DIR/basic_node_project.sh" << 'EOL'
-#!/bin/bash
+# Install Node.js packages globally
+install_global_packages() {
+    local packages=(
+        "npm@latest"
+        "yarn"
+        "typescript"
+        "ts-node"
+        "eslint"
+        "prettier"
+        "nodemon"
+        "serve"
+        "http-server"
+        "npm-check-updates"
+    )
+    
+    for package in "${packages[@]}"; do
+        log_info "Installing ${package}..."
+        npm install -g "$package" || log_warning "Failed to install ${package}, continuing anyway..."
+    done
+}
+
+# Main function
+main() {
+    log_info "Setting up Node.js development environment..."
+
+    # Detect OS
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        readonly OS="macOS"
+        log_info "Detected macOS system"
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        readonly OS="Linux"
+        log_info "Detected Linux system"
+    else
+        handle_error "Unsupported operating system: $OSTYPE"
+    fi
+
+    # Install NVM (Node Version Manager)
+    if ! setup_nvm; then
+        log_warning "NVM setup encountered issues. Continuing with installation..."
+    else
+        log_success "NVM setup completed successfully."
+    fi
+
+    # Install Node.js LTS version
+    if command_exists nvm; then
+        log_info "Installing Node.js LTS version..."
+        
+        # Install LTS version
+        if ! nvm install --lts; then
+            handle_error "Failed to install Node.js LTS version"
+        fi
+        
+        # Use LTS version
+        if ! nvm use --lts; then
+            handle_error "Failed to use Node.js LTS version"
+        fi
+        
+        # Set as default
+        if ! nvm alias default 'lts/*'; then
+            log_warning "Failed to set Node.js LTS as default"
+        fi
+        
+        # Verify Node.js installation
+        if command_exists node; then
+            log_success "Node.js $(node --version) installed successfully"
+        else
+            handle_error "Node.js installation verification failed"
+        fi
+        
+        # Install essential global npm packages
+        log_info "Installing essential Node.js development tools..."
+        install_global_packages
+    else
+        handle_error "NVM not available. Cannot install Node.js."
+    fi
+
+    # Create Node.js project template
+    local templates_dir
+    templates_dir=$(create_templates_dir)
+    local template_script="$templates_dir/basic_node_project.sh"
+
+    # Create Node.js project template script
+    log_info "Creating Node.js project template..."
+    cat > "$template_script" << 'EOL'
+#!/usr/bin/env bash
 # Basic Node.js project template generator
 
+set -euo pipefail
+
+# Define colors for output
+readonly GREEN='\033[0;32m'
+readonly BLUE='\033[0;34m'
+readonly YELLOW='\033[0;33m'
+readonly RED='\033[0;31m'
+readonly NC='\033[0m' # No Color
+
 if [ "$#" -ne 1 ]; then
-    echo "Usage: nodeproject projectname"
+    echo -e "${RED}Usage: nodeproject <projectname>${NC}"
     exit 1
 fi
 
 PROJECT_NAME="$1"
+
+# Check if directory already exists
+if [[ -d "$PROJECT_NAME" ]]; then
+    echo -e "${RED}Error: Directory '$PROJECT_NAME' already exists.${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}Creating Node.js project: $PROJECT_NAME${NC}"
 mkdir -p "$PROJECT_NAME"
-cd "$PROJECT_NAME"
+cd "$PROJECT_NAME" || exit 1
 
 # Initialize npm project
+echo -e "${BLUE}Initializing npm project...${NC}"
 npm init -y
 
+# Function to safely update package.json
+update_package_json() {
+    local tmp_file
+    tmp_file=$(mktemp)
+    
+    # Make sure temporary file is created successfully
+    if [[ ! -f "$tmp_file" ]]; then
+        echo -e "${RED}Failed to create temporary file${NC}"
+        return 1
+    fi
+    
+    # Create cleanup trap
+    trap 'rm -f "$tmp_file"' EXIT
+    
+    # Check if jq is available
+    if ! command -v jq &> /dev/null; then
+        echo -e "${YELLOW}jq not found. Skipping package.json modification.${NC}"
+        return 1
+    fi
+    
+    # Update package.json
+    jq '.scripts.start = "node src/index.js" | 
+        .scripts.test = "jest" | 
+        .scripts.lint = "eslint src/**/*.js" |
+        .scripts.format = "prettier --write \"src/**/*.js\"" | 
+        .author = "Joshua Michael Hall" |
+        .license = "MIT"' package.json > "$tmp_file" || return 1
+    
+    # Check if the temporary file has content
+    if [[ ! -s "$tmp_file" ]]; then
+        echo -e "${RED}Failed to update package.json (empty result)${NC}"
+        return 1
+    fi
+    
+    # Replace original file
+    mv "$tmp_file" package.json
+    return 0
+}
+
 # Update package.json with better defaults
-tmp=$(mktemp)
-jq '.scripts.start = "node src/index.js" | 
-    .scripts.test = "jest" | 
-    .scripts.lint = "eslint src/**/*.js" |
-    .scripts.format = "prettier --write \"src/**/*.js\"" | 
-    .author = "Joshua Michael Hall" |
-    .license = "MIT"' package.json > "$tmp" && mv "$tmp" package.json
+if ! update_package_json; then
+    echo -e "${YELLOW}Falling back to simple package.json modification${NC}"
+    # Simple modification without jq
+    sed -i.bak 's/"scripts": {/"scripts": {\n    "start": "node src\/index.js",\n    "test": "jest",\n    "lint": "eslint src\/**\/*.js",\n    "format": "prettier --write \\"src\/**\/*.js\\",/g' package.json
+    sed -i.bak 's/"author": ""/"author": "Joshua Michael Hall"/g' package.json
+    sed -i.bak 's/"license": "ISC"/"license": "MIT"/g' package.json
+    rm -f package.json.bak
+fi
 
 # Create project structure
+echo -e "${BLUE}Creating project structure...${NC}"
 mkdir -p src
 mkdir -p test
 
@@ -119,7 +322,6 @@ module.exports = { main };
 EOF
 
 # Create test file
-mkdir -p test
 cat > test/index.test.js << 'EOF'
 const { main } = require('../src/index');
 
@@ -257,6 +459,7 @@ cat > .prettierrc << 'EOF'
 EOF
 
 # Install development dependencies
+echo -e "${BLUE}Installing development dependencies...${NC}"
 npm install --save-dev \
   eslint \
   prettier \
@@ -264,24 +467,37 @@ npm install --save-dev \
   nodemon
 
 # Initialize Git repository
+echo -e "${BLUE}Initializing Git repository...${NC}"
 git init
+git add .
+git commit -m "Initial commit" --no-verify
 
-echo "Node.js project $PROJECT_NAME created successfully!"
+echo -e "${GREEN}Node.js project $PROJECT_NAME created successfully!${NC}"
 EOL
 
-# Make template executable
-chmod +x "$TEMPLATE_DIR/basic_node_project.sh"
+    # Make template executable
+    chmod +x "$template_script" || handle_error "Failed to make template script executable"
 
-# Create nodeproject function
-if [[ -z $(grep -r "nodeproject()" ~/.zshrc) ]]; then
-    cat >> ~/.zshrc << 'EOL'
+    # Add function to .zshrc
+    add_function_to_zshrc "nodeproject" "$template_script"
 
-# Node.js project creator function
-nodeproject() {
-    $HOME/.local/share/node-templates/basic_node_project.sh "$@"
+    log_success "Node.js environment setup complete!"
+    log_info "New commands available:"
+    log_info "  nodeproject - Create a new Node.js project"
+    log_info "  nvm - Manage Node.js versions"
+    log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
 }
-EOL
-fi
 
-echo -e "${GREEN}Node.js environment setup complete!${NC}"
-echo -e "${YELLOW}Restart your shell or run 'source ~/.zshrc' to use the new commands${NC}"
+# Trap for cleanup on script exit
+cleanup() {
+    local exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        log_error "Script failed with exit code $exit_code"
+    fi
+    exit $exit_code
+}
+trap cleanup EXIT
+
+# Run the main function
+main "$@"
+EOL
