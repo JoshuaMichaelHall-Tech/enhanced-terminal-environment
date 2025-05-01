@@ -231,3 +231,299 @@ installation.
 [0;31mERROR: Script failed with exit code 1[0m
 [0;31mERROR: Python environment setup failed[0m
 [0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+User choice on continuing: n
+[0;34mINFO: Installation aborted by user.[0m
+
+[0;36m[1mRunning in recovery mode[0m
+[0;36m==================================================[0m
+[0;34mINFO: Attempting to resume a previous installation...[0m
+[0;34mINFO: Found previous installation log at: /Users/jmh/repos_tech/terminal-env/install_log.txt[0m
+[0;32mSUCCESS: Core environment was successfully installed previously[0m
+[0;34mINFO: Creating essential directories...[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/nvim[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/tmux[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.tmux/plugins[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.zsh[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/bin[0m
+[0;34mINFO: Directory already exists: /Users/jmh/projects[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/python-templates[0m
+[0;32mSUCCESS: Created: /Users/jmh/.local/share/node-templates[0m
+[0;32mSUCCESS: Created: /Users/jmh/.local/share/ruby-templates[0m
+
+[0;36m[1mSetting up Python environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+Wed Apr 30 21:01:38 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+[0;34mINFO: Setting up Python development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;32mSUCCESS: Python already installed: 3.13.3[0m
+[0;32mSUCCESS: pipx already installed[0m
+[0;32mSUCCESS: Poetry already installed[0m
+Updating Poetry version ...
+
+Using version ^2.1.2 for poetry
+
+Updating dependencies
+Resolving dependencies...
+
+No dependencies to install or update
+[0;34mINFO: Installing essential Python development tools...[0m
+[0;32mSUCCESS: ipython already installed, skipping...[0m
+[0;32mSUCCESS: black already installed, skipping...[0m
+[0;32mSUCCESS: flake8 already installed, skipping...[0m
+[0;32mSUCCESS: pylint already installed, skipping...[0m
+[0;32mSUCCESS: mypy already installed, skipping...[0m
+[0;32mSUCCESS: pytest already installed, skipping...[0m
+[0;32mSUCCESS: httpie already installed, skipping...[0m
+[0;34mINFO: Adding pytest-cov plugin to pytest...[0m
+⚠️ pytest-cov already seems to be injected in 'pytest'. Not modifying existing
+installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
+installation.
+[0;34mINFO: Creating Python project template...[0m
+/Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh: line 236: Creating Python templates directory: /Users/jmh/.local/share/python-templates
+/Users/jmh/.local/share/python-templates/basic_project.sh: No such file or directory
+[0;31mERROR: Script failed with exit code 1[0m
+[0;31mERROR: Python environment setup failed[0m
+[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+User choice on continuing: y
+
+[0;36m[1mSetting up Node.js/JavaScript environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
+Wed Apr 30 21:01:53 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
+[0;34mINFO: Setting up Node.js development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;34mINFO: Installing NVM (Node Version Manager)...[0m
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 16555  100 16555    0     0  84755      0 --:--:-- --:--:-- --:--:-- 84464
+=> Downloading nvm from git to '/Users/jmh/.nvm'
+=> Cloning into '/Users/jmh/.nvm'...
+* (HEAD detached at FETCH_HEAD)
+  master
+=> Compressing and cleaning up git repository
+
+=> nvm source string already in /Users/jmh/.zshrc
+=> bash_completion source string already in /Users/jmh/.zshrc
+=> You currently have modules installed globally with `npm`. These will no
+=> longer be linked to the active version of Node when you install a new node
+=> with `nvm`; and they may (depending on how you construct your `$PATH`)
+=> override the binaries of modules installed with `nvm`:
+
+/usr/local/lib
+├── corepack@0.32.0
+├── eslint_d@14.3.0
+├── prettier@3.5.3
+├── typescript-language-server@4.3.4
+└── typescript@5.8.2
+=> If you wish to uninstall them at a later point (or re-install them under your
+=> `nvm` Nodes), you can remove them from the system Node as follows:
+
+     $ nvm use system
+     $ npm uninstall -g a_module
+
+=> Close and reopen your terminal to start using nvm or run the following to use it now:
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[0;32mSUCCESS: NVM setup completed successfully.[0m
+[0;34mINFO: Installing Node.js LTS version...[0m
+Installing latest LTS version.
+Downloading and installing node v22.15.0...
+Downloading https://nodejs.org/dist/v22.15.0/node-v22.15.0-darwin-x64.tar.xz...
+##O#-                                                                                                     1.0%#                                                  3.2%##                                                 6.1%######                                            12.7%###########                                       24.8%#################                                 36.8%#######################                           49.5%#############################                     62.5%###################################               74.1%########################################          85.0%############################################      92.3%################################################ 100.0%
+Computing checksum with sha256sum
+Checksums matched!
+Now using node v22.15.0 (npm v10.9.2)
+Creating default alias: [0;32mdefault[0m [0;90m->[0m [1;33mlts/*[0m ([0;90m->[0m [0;32mv22.15.0[0m)
+Now using node v22.15.0 (npm v10.9.2)
+[0;32mdefault[0m [0;90m->[0m [1;33mlts/*[0m ([0;90m->[0m [0;32mv22.15.0[0m)
+[0;32mSUCCESS: Node.js v22.15.0 installed successfully[0m
+[0;34mINFO: Installing essential Node.js development tools...[0m
+[0;34mINFO: Installing npm@latest...[0m
+
+removed 14 packages, and changed 60 packages in 12s
+
+25 packages are looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing yarn...[0m
+
+added 1 package in 6s
+[0;34mINFO: Installing typescript...[0m
+
+added 1 package in 3s
+[0;34mINFO: Installing ts-node...[0m
+
+added 20 packages in 4s
+[0;34mINFO: Installing eslint...[0m
+
+added 86 packages in 6s
+
+22 packages are looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing prettier...[0m
+
+added 1 package in 2s
+
+1 package is looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing nodemon...[0m
+
+added 30 packages in 11s
+
+4 packages are looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing serve...[0m
+
+added 88 packages in 5s
+
+24 packages are looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing http-server...[0m
+
+added 48 packages in 4s
+
+15 packages are looking for funding
+  run `npm fund` for details
+[0;34mINFO: Installing npm-check-updates...[0m
+
+added 1 package in 2s
+[0;34mINFO: Successfully installed 10 out of 10 packages[0m
+[0;34mINFO: Creating Node.js project template...[0m
+[0;34mINFO: Adding nodeproject function to .zshrc[0m
+[0;32mSUCCESS: Node.js environment setup complete![0m
+[0;34mINFO: New commands available:[0m
+[0;34mINFO:   nodeproject - Create a new Node.js project[0m
+[0;34mINFO:   nvm - Manage Node.js versions[0m
+[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
+
+[0;36m[1mSetting up Ruby environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
+Wed Apr 30 21:03:30 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+[0;34mINFO: Setting up Ruby development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;34mINFO: Installing RVM (Ruby Version Manager)...[0m
+[0;34mINFO: Trying direct GPG key download...[0m
+curl: (56) Failure writing output to destination, passed 146 returned 0
+[0;34mINFO: Trying to import GPG keys from hkp://keys.gnupg.net...[0m
+[0;34mINFO: Trying to import GPG keys from hkp://keyserver.ubuntu.com...[0m
+[0;34mINFO: Trying to import GPG keys from hkp://pgp.mit.edu...[0m
+[0;34mINFO: Downloading and installing RVM...[0m
+Downloading https://github.com/rvm/rvm/archive/1.29.12.tar.gz
+Downloading https://github.com/rvm/rvm/releases/download/1.29.12/1.29.12.tar.gz.asc
+Found PGP signature at: 'https://github.com/rvm/rvm/releases/download/1.29.12/1.29.12.tar.gz.asc',
+but no GPG software exists to validate it, skipping.
+Installing RVM to /Users/jmh/.rvm/
+    RVM PATH line found in /Users/jmh/.zshrc.
+    RVM PATH line not found for Bash, rerun this command with '--auto-dotfiles' flag to fix it.
+    RVM sourcing line found in /Users/jmh/.zshrc.
+    RVM sourcing line not found for Bash, rerun this command with '--auto-dotfiles' flag to fix it.
+Installation of RVM in /Users/jmh/.rvm/ is almost complete:
+
+  * To start using RVM you need to run `source /Users/jmh/.rvm/scripts/rvm`
+    in all your open shell windows, in rare cases you need to reopen all shell windows.
+<warn>Thanks for installing RVM 🙏</warn>
+Please consider donating to our open collective to help us maintain RVM.
+
+👉  Donate: <code>https://opencollective.com/rvm/donate</code>
+
+
+/Users/jmh/.rvm/scripts/functions/support: line 182: _system_name: unbound variable
+[0;31mERROR: Script failed with exit code 1[0m
+[0;31mERROR: Ruby environment setup failed[0m
+[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+User choice on continuing: y
+
+[0;36m[1mCopying configuration files[0m
+[0;36m==================================================[0m
+[0;34mINFO: Copying Neovim configuration files...[0m
+[0;32mSUCCESS: Copied Neovim configuration files to /Users/jmh/.config/nvim[0m
+[0;34mINFO: Copying Tmux configuration file...[0m
+[0;32mSUCCESS: Copied Tmux configuration file to /Users/jmh/.tmux.conf[0m
+[0;34mINFO: Copying Zsh configuration file...[0m
+[0;32mSUCCESS: Copied Zsh configuration file to /Users/jmh/.zshrc[0m
+[0;34mINFO: Copying Zsh aliases configuration file...[0m
+[0;32mSUCCESS: Copied Zsh aliases configuration file to /Users/jmh/.zsh/aliases.zsh[0m
+[0;34mINFO: Copying Git configuration file...[0m
+[0;32mSUCCESS: Copied Git configuration file to /Users/jmh/.gitconfig[0m
+
+[0;36m[1mSetting up custom functions[0m
+[0;36m==================================================[0m
+[0;34mINFO: Copying custom functions configuration file...[0m
+[0;32mSUCCESS: Copied custom functions configuration file to /Users/jmh/.local/bin/functions.sh[0m
+[0;32mSUCCESS: Functions sourcing already in .zshrc[0m
+
+[0;36m[1mInstallation Complete![0m
+[0;36m==================================================[0m
+
+[0;36m[1mRunning in recovery mode[0m
+[0;36m==================================================[0m
+[0;34mINFO: Attempting to resume a previous installation...[0m
+[0;34mINFO: Found previous installation log at: /Users/jmh/repos_tech/terminal-env/install_log.txt[0m
+[0;32mSUCCESS: Core environment was successfully installed previously[0m
+[0;32mSUCCESS: Node.js environment was successfully installed previously[0m
+[0;34mINFO: Configuration files were likely copied previously[0m
+[0;34mINFO: Creating essential directories...[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/nvim[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/tmux[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.tmux/plugins[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.zsh[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/bin[0m
+[0;34mINFO: Directory already exists: /Users/jmh/projects[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/python-templates[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/node-templates[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/ruby-templates[0m
+
+[0;36m[1mSetting up Python environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+Wed Apr 30 21:08:14 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+[0;34mINFO: Setting up Python development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;32mSUCCESS: Python already installed: 3.13.3[0m
+[0;32mSUCCESS: pipx already installed[0m
+[0;32mSUCCESS: Poetry already installed[0m
+Updating Poetry version ...
+
+Using version ^2.1.2 for poetry
+
+Updating dependencies
+Resolving dependencies...
+
+No dependencies to install or update
+[0;34mINFO: Installing essential Python development tools...[0m
+[0;32mSUCCESS: ipython already installed, skipping...[0m
+[0;32mSUCCESS: black already installed, skipping...[0m
+[0;32mSUCCESS: flake8 already installed, skipping...[0m
+[0;32mSUCCESS: pylint already installed, skipping...[0m
+[0;32mSUCCESS: mypy already installed, skipping...[0m
+[0;32mSUCCESS: pytest already installed, skipping...[0m
+[0;32mSUCCESS: httpie already installed, skipping...[0m
+[0;34mINFO: Adding pytest-cov plugin to pytest...[0m
+⚠️ pytest-cov already seems to be injected in 'pytest'. Not modifying existing
+installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
+installation.
+[0;34mINFO: Creating Python project template...[0m
+[0;34mINFO: Adding pyproject function to .zshrc[0m
+[0;32mSUCCESS: Python environment setup complete![0m
+[0;34mINFO: New commands available:[0m
+[0;34mINFO:   pyproject - Create a new Python project with virtual environment[0m
+[0;34mINFO:   poetry - Manage Python packages and dependencies[0m
+[0;34mINFO:   pipx - Install and run Python applications in isolated environments[0m
+[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+
+[0;36m[1mSetting up Ruby environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
+Wed Apr 30 21:08:20 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+/Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh: line 115: syntax error near unexpected token `}'
+[0;31mERROR: Ruby environment setup failed[0m
+[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+User choice on continuing: y
+
+[0;36m[1mInstallation Complete![0m
+[0;36m==================================================[0m
