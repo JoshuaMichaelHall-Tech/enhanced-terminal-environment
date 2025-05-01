@@ -23,6 +23,42 @@ This project provides a progressive approach to learning essential terminal tool
 
 The course focuses on core fundamentals first, gradually introducing more advanced concepts as your skills develop.
 
+## Learning Path
+
+This repository now includes a complete, structured 12-month learning path to help you master terminal-based development. Each monthly guide includes:
+
+- Clear learning objectives
+- Weekly assignments and projects
+- Daily practice routines
+- Resource recommendations
+- A monthly capstone project
+
+### Learning Path Structure
+
+The guides are organized into four phases:
+
+#### Foundations (Months 1-3)
+- **Month 1:** [Terminal & Shell Fundamentals](learning_guides/month-01-terminal-fundamentals.md)
+- **Month 2:** [Vim, Neovim & Text Editing](learning_guides/month-02-vim-neovim.md)
+- **Month 3:** [Tmux & Session Management](learning_guides/month-03-tmux-session.md)
+
+#### Integration (Months 4-6)
+- **Month 4:** [Shell Scripting & Automation](learning_guides/month-04-shell-scripting.md)
+- **Month 5:** [Git & Version Control Mastery](learning_guides/month-05-git-version-control.md)
+- **Month 6:** [Package Management & Development Environment](learning_guides/month-06-package-management.md)
+
+#### Workflow Optimization (Months 7-9)
+- **Month 7:** [Database Management from Terminal](learning_guides/month-07-database-management.md)
+- **Month 8:** [HTTP APIs & Network Tools](learning_guides/month-08-http-apis.md)
+- **Month 9:** [Monitoring & Performance Optimization](learning_guides/month-09-monitoring-performance.md)
+
+#### Advanced Applications (Months 10-12)
+- **Month 10:** [Cloud CLI Tools](learning_guides/month-10-cloud-cli.md)
+- **Month 11:** [Configuration Management & Automation](learning_guides/month-11-configuration-management.md)
+- **Month 12:** [Terminal Productivity System & Capstone](learning_guides/month-12-productivity-capstone.md)
+
+Each guide is designed to be completed in one month, with approximately 10 hours of study per week.
+
 ## Philosophy
 
 This learning path is built on these core principles:
@@ -62,7 +98,14 @@ This learning path is built on these core principles:
 
 The script will install and configure the necessary tools with sensible defaults for modern software development.
 
-### What's Included
+### Starting the Learning Path
+
+1. Begin with the [Month 1 Guide](learning_guides/month-01-terminal-fundamentals.md)
+2. Follow the weekly assignments and daily practice routines
+3. Complete projects to apply your skills
+4. Progress through each month as you build your terminal mastery
+
+## What's Included
 
 - **Cross-platform installation script** for setting up all essential tools
 - **Language-specific development environments** for Python, JavaScript, and Ruby
@@ -70,7 +113,7 @@ The script will install and configure the necessary tools with sensible defaults
 - **Cloud tooling** for AWS, Terraform, and Ansible
 - **Terminal-based HTTP clients** for API testing
 - **Minimal configurations** for Neovim, Tmux, and Zsh
-- **Month-by-month learning guides** with clear objectives and exercises
+- **Comprehensive learning guides** with clear objectives and exercises
 - **Quick reference cheatsheet** for all tools
 - **Project suggestions** to reinforce learning
 
@@ -98,41 +141,6 @@ The script will install and configure the necessary tools with sensible defaults
 - Ripgrep and fd for fast searching
 - Custom shortcut functions
 - HTTP clients (curl, HTTPie)
-
-## Learning Path Structure
-
-The 12-month learning path is structured as follows:
-
-1. **Month 1-3: Foundations**
-   - Shell fundamentals and navigation
-   - Basic Vim editing and movement
-   - Tmux session management
-   - Git essentials
-   - Docker basics
-   - HTTP client fundamentals
-
-2. **Month 4-6: Integration**
-   - Shell scripting
-   - Advanced Vim techniques
-   - Tmux workflow optimization
-   - Docker Compose for local development
-   - Package managers for Python, JavaScript, and Ruby
-   - GitHub CLI for enhanced Git workflows
-
-3. **Month 7-9: Workflow Optimization**
-   - Custom scripts and aliases
-   - Vim plugins and customization
-   - Infrastructure as code with Terraform
-   - Advanced Git workflows
-   - Database administration from terminal
-   - Terminal-based monitoring tools
-
-4. **Month 10-12: Advanced Applications**
-   - Full-stack terminal workflow
-   - Cloud resource management via CLI
-   - Performance optimization
-   - Advanced infrastructure automation
-   - Terminal-based productivity systems
 
 ## Language-Specific Terminal Workflows
 
@@ -264,6 +272,7 @@ This project was developed with assistance from Anthropic's Claude AI assistant,
 - Documentation writing and organization
 - Code structure suggestions
 - Troubleshooting and debugging assistance
+- Development of comprehensive learning guides
 
 Claude was used as a development aid while all final implementation decisions and code review were performed by Joshua Michael Hall.
 
