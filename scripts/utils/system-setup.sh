@@ -67,7 +67,7 @@ if [[ "$OS" == "macOS" ]]; then
     # Check for Homebrew
     if ! command -v brew &> /dev/null; then
         echo -e "${BLUE}Installing Homebrew...${NC}"
-        run_command "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         
         # Add Homebrew to PATH
         if [[ "$(uname -m)" == "arm64" ]]; then
@@ -148,6 +148,7 @@ if [[ "$OS" == "macOS" ]]; then
         brew install opentofu
         
         # Create terraform alias for compatibility
+        mkdir -p ~/.zsh
         echo 'alias terraform="tofu"' >> ~/.zsh/aliases.zsh
         
         echo -e "${YELLOW}Note: Using OpenTofu as Terraform alternative due to license changes${NC}"
@@ -248,31 +249,31 @@ elif [[ "$OS" == "Linux" ]]; then
         echo -e "${GREEN}AWS CLI already installed.${NC}"
     fi
     
-# Install OpenTofu
-if ! command -v tofu &> /dev/null; then
-    echo -e "${BLUE}Installing OpenTofu...${NC}"
-    
-    # Download the installer script
-    curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh
-    
-    # Give it execution permissions
-    chmod +x install-opentofu.sh
-    
-    # Run the installer for deb-based systems
-    ./install-opentofu.sh --install-method deb
-    
-    # Remove the installer
-    rm -f install-opentofu.sh
-    
-    # Verify installation
-    if command -v tofu &> /dev/null; then
-        echo -e "${GREEN}OpenTofu installed successfully: $(tofu --version)${NC}"
+    # Install OpenTofu
+    if ! command -v tofu &> /dev/null; then
+        echo -e "${BLUE}Installing OpenTofu...${NC}"
+        
+        # Download the installer script
+        curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh
+        
+        # Give it execution permissions
+        chmod +x install-opentofu.sh
+        
+        # Run the installer for deb-based systems
+        ./install-opentofu.sh --install-method deb
+        
+        # Remove the installer
+        rm -f install-opentofu.sh
+        
+        # Verify installation
+        if command -v tofu &> /dev/null; then
+            echo -e "${GREEN}OpenTofu installed successfully: $(tofu --version)${NC}"
+        else
+            echo -e "${RED}OpenTofu installation failed.${NC}"
+        fi
     else
-        echo -e "${RED}OpenTofu installation failed.${NC}"
+        echo -e "${GREEN}OpenTofu already installed: $(tofu --version)${NC}"
     fi
-else
-    echo -e "${GREEN}OpenTofu already installed: $(tofu --version)${NC}"
-fi
     
     # Install Ansible
     if ! is_installed "ansible"; then
@@ -305,7 +306,9 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     
     # Prevent Oh My Zsh from changing the .zshrc file (we'll use our own)
-    mv ~/.zshrc.pre-oh-my-zsh ~/.zshrc 2>/dev/null || true
+    if [[ -f "$HOME/.zshrc.pre-oh-my-zsh" ]]; then
+        mv "$HOME/.zshrc.pre-oh-my-zsh" "$HOME/.zshrc" 
+    fi
 else
     echo -e "${GREEN}Oh My Zsh already installed.${NC}"
 fi
@@ -338,7 +341,8 @@ else
 fi
 
 # Set Zsh as default shell if it isn't already
-if [ "$SHELL" != "$(which zsh)" ]; then
+current_shell=$(getent passwd "$USER" | cut -d: -f7)
+if [[ "$current_shell" != "$(which zsh)" ]]; then
     echo -e "${BLUE}Setting Zsh as default shell...${NC}"
     register_zsh_shell
     chsh -s "$(which zsh)" || handle_error "Failed to change shell to Zsh. Try running 'chsh -s $(which zsh)' manually."

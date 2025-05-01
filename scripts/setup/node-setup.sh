@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Node.js/JavaScript development environment setup script - Ultra-robust version
+# Node.js/JavaScript development environment setup script
 # Part of Enhanced Terminal Environment
-# Version: 5.0
+# Version: 5.1 - With improved Homebrew handling
 
-# Exit on error for most things, but not for npm package installations
-set -eo pipefail
+# Do not exit on errors immediately to allow graceful fallbacks
+set -o pipefail
 
 # Define colors for output
 readonly GREEN='\033[0;32m'
@@ -35,19 +35,7 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Verify Node.js installation by checking actual commands
-verify_node_install() {
-    # Check for node command
-    if command_exists node; then
-        log_success "Node.js is installed: $(node --version)"
-        return 0
-    else
-        log_error "Node.js command not found in PATH"
-        return 1
-    fi
-}
-
-# Create project templates directory - this is what we really need
+# Create project templates directory
 create_templates_dir() {
     local dir="$HOME/.local/share/node-templates"
     
@@ -81,6 +69,66 @@ EOF
     fi
 }
 
+# Install Node.js - with multiple approaches
+install_nodejs() {
+    log_info "Attempting to install Node.js..."
+    
+    # Try using Homebrew first
+    if command_exists brew; then
+        log_info "Installing Node.js via Homebrew..."
+        if brew install node; then
+            log_success "Node.js installed successfully via Homebrew"
+            return 0
+        else
+            log_warning "Failed to install Node.js via Homebrew, trying alternative methods..."
+        fi
+    else
+        log_warning "Homebrew not available, trying alternative methods..."
+    fi
+    
+    # For macOS, using the official installer as fallback
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        log_info "Downloading Node.js installer for macOS..."
+        
+        # Create a temporary directory
+        local tmp_dir=$(mktemp -d)
+        
+        # Download the pkg installer (LTS version)
+        if curl -sSL https://nodejs.org/dist/v18.18.2/node-v18.18.2.pkg -o "$tmp_dir/node.pkg"; then
+            log_info "Running Node.js installer. This may require your password..."
+            
+            # Run the installer
+            if sudo installer -pkg "$tmp_dir/node.pkg" -target /; then
+                rm -rf "$tmp_dir"
+                log_success "Node.js installed successfully via pkg installer"
+                return 0
+            else
+                rm -rf "$tmp_dir"
+                log_error "Failed to install Node.js via pkg installer"
+            fi
+        else
+            rm -rf "$tmp_dir"
+            log_error "Failed to download Node.js installer"
+        fi
+    fi
+    
+    # For Linux, try apt
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if command_exists apt; then
+            log_info "Installing Node.js via apt..."
+            if sudo apt update && sudo apt install -y nodejs npm; then
+                log_success "Node.js installed successfully via apt"
+                return 0
+            else
+                log_error "Failed to install Node.js via apt"
+            fi
+        fi
+    fi
+    
+    log_error "Failed to install Node.js through any method"
+    return 1
+}
+
 # Main function
 main() {
     log_info "Setting up Node.js development environment..."
@@ -100,11 +148,20 @@ main() {
     # Check if Node.js is already installed
     if command_exists node; then
         log_success "Node.js is already installed: $(node --version)"
-        NODE_INSTALLED=true
     else
-        log_error "Node.js not found. Please install Node.js manually."
-        log_info "On macOS, you can install it with: brew install node"
-        log_info "On Linux, you can install it with: sudo apt install nodejs"
+        log_info "Node.js not found. Attempting to install..."
+        if ! install_nodejs; then
+            log_error "Failed to install Node.js. Please install it manually then run this script again."
+            log_info "On macOS, you can install it with: brew install node"
+            log_info "On Linux, you can install it with: sudo apt install nodejs npm"
+            exit 1
+        fi
+    fi
+
+    # Verify npm is available
+    if ! command_exists npm; then
+        log_error "npm is not available despite Node.js being installed."
+        log_info "Please install npm and then run this script again."
         exit 1
     fi
 
@@ -378,7 +435,9 @@ EOL
     log_info "  nodeproject - Create a new Node.js project"
     log_info "Node.js packages can be installed globally with: npm install -g <package-name>"
     log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
+    
+    return 0
 }
 
-# Run the main function with all arguments
+# Run the main function
 main "$@"

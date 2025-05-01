@@ -1,5 +1,5 @@
 Enhanced Terminal Environment Installation Log
-Date: Thu May  1 07:25:49 CDT 2025
+Date: Thu May  1 08:09:11 CDT 2025
 User: jmh
 System: Darwin Mac.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:32:05 PDT 2025; root:xnu-11417.101.15~117/RELEASE_ARM64_T8132 arm64
 ----------------------------------------
@@ -36,7 +36,7 @@ Continue with installation: y
 [0;36m[1mSetting up core environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-Thu May  1 07:25:55 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+Thu May  1 08:09:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
 [0;34mDetected macOS system[0m
 [0;34mCreating configuration directories...[0m
 [0;34mCreating directory: /Users/jmh/.config/nvim[0m
@@ -79,7 +79,9 @@ Thu May  1 07:25:55 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;32mzsh-autosuggestions already installed.[0m
 [0;32mzsh-syntax-highlighting already installed.[0m
 [0;32mFZF already installed.[0m
-[0;32mZsh already set as default shell.[0m
+/Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh: line 344: getent: command not found
+[0;34mSetting Zsh as default shell...[0m
+Changing shell for jmh.
 [0;32mSystem setup complete![0m
 [0;33mNote: Some changes may require logging out and back in to take effect.[0m
 [0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
@@ -87,10 +89,10 @@ Thu May  1 07:25:55 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mSetting up Python environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
-Thu May  1 07:27:01 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+Thu May  1 08:11:02 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
 [0;34mINFO: Setting up Python development environment...[0m
 [0;34mINFO: Detected macOS system[0m
-[0;32mSUCCESS: Python already installed: 3.13.3[0m
+[0;32mSUCCESS: Python already installed: 3.9.6[0m
 [0;32mSUCCESS: pipx already installed[0m
 [0;32mSUCCESS: Poetry already installed[0m
 Updating Poetry version ...
@@ -114,7 +116,7 @@ No dependencies to install or update
 installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
 installation.
 [0;34mINFO: Creating Python project template...[0m
-[0;34mINFO: Adding pyproject function to .zshrc[0m
+[0;32mSUCCESS: pyproject function already exists in .zshrc[0m
 [0;32mSUCCESS: Python environment setup complete![0m
 [0;34mINFO: New commands available:[0m
 [0;34mINFO:   pyproject - Create a new Python project with virtual environment[0m
@@ -126,7 +128,7 @@ installation.
 [0;36m[1mSetting up Node.js/JavaScript environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
-Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
+Thu May  1 08:11:05 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
 [0;34mINFO: Setting up Node.js development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;32mSUCCESS: Node.js is already installed: v22.15.0[0m
@@ -142,17 +144,29 @@ Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mSetting up Ruby environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
-Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+Thu May  1 08:11:05 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
 [0;34mINFO: Setting up Ruby development environment...[0m
 [0;34mINFO: Detected macOS system[0m
-[0;34mINFO: Ruby is already installed: ruby 3.2.6 (2024-10-30 revision 63aeb018eb) [arm64-darwin24][0m
+[0;34mINFO: Ruby is already installed: ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.arm64e-darwin24][0m
 [0;34mINFO: Installing essential Ruby gems...[0m
 [0;32mSUCCESS: bundler already installed, skipping...[0m
-[0;32mSUCCESS: pry already installed, skipping...[0m
-[0;32mSUCCESS: rubocop already installed, skipping...[0m
-[0;32mSUCCESS: solargraph already installed, skipping...[0m
+[0;34mINFO: Installing pry...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install pry, continuing anyway...[0m
+[0;34mINFO: Installing rubocop...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install rubocop, continuing anyway...[0m
+[0;34mINFO: Installing solargraph...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install solargraph, continuing anyway...[0m
 [0;32mSUCCESS: rake already installed, skipping...[0m
-[0;32mSUCCESS: rspec already installed, skipping...[0m
+[0;34mINFO: Installing rspec...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install rspec, continuing anyway...[0m
 [0;34mINFO: Creating Ruby project template...[0m
 [0;34mINFO: Adding rubyproject function to .zshrc[0m
 [0;32mSUCCESS: Ruby environment setup complete![0m
@@ -174,8 +188,7 @@ Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;34mINFO: Copying Zsh aliases configuration file...[0m
 [0;32mSUCCESS: Copied Zsh aliases configuration file to /Users/jmh/.zsh/aliases.zsh[0m
 [0;34mINFO: Copying Git configuration file...[0m
-[0;31mERROR: Failed to copy Git configuration file[0m
-[0;33mWARNING: Failed to copy Git configuration, but continuing installation[0m
+[0;32mSUCCESS: Copied Git configuration file to /Users/jmh/.gitconfig[0m
 
 [0;36m[1mSetting up custom functions[0m
 [0;36m==================================================[0m
