@@ -180,157 +180,62 @@ After installation, you'll have access to the following commands:
 
 ## Troubleshooting Guide
 
-### Common Installation Issues
+The installation process has been significantly improved to handle common issues automatically. Most users should experience a smooth installation, but if you encounter problems:
 
-#### Python Environment (PEP 668) Issues
+### Installation Recovery
 
-**Symptoms:**
-- Errors about "externally-managed-environment"
-- pip installation failures
-- Permission issues with Python packages
+If your installation is interrupted or encounters an error:
 
-**Solutions:**
-1. Use the `fix-pip.sh` script included in the repository:
-   ```bash
-   ./fix-pip.sh
-   ```
-2. Manual fix - Install pipx using system package manager:
-   ```bash
-   # On macOS
-   brew install pipx
-   pipx ensurepath
-   # On Ubuntu/Debian
-   sudo apt install python3-pipx
-   pipx ensurepath
-   ```
-3. Restart the installation with recovery mode:
-   ```bash
-   ./install.sh --recover
-   ```
+```bash
+# Run the installation in recovery mode
+./install.sh --recover
+```
 
-#### Ruby Installation Problems
+This will detect which components were successfully installed and continue from where it left off.
 
-**Symptoms:**
-- RVM installation fails with GPG key issues
-- Ruby gem installation errors
+### Directory and Permission Issues
 
-**Solutions:**
-1. Use system Ruby instead of RVM:
-   ```bash
-   # On macOS
-   brew install ruby
-   echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
-   source ~/.zshrc
-   
-   # On Ubuntu/Debian
-   sudo apt update
-   sudo apt install ruby-full
-   ```
-2. Restart the installation with recovery mode:
-   ```bash
-   ./install.sh --recover
-   ```
+Directory creation and permission handling has been improved, but if you encounter permission errors:
 
-#### Node.js/NVM Issues
+```bash
+# Fix permissions for configuration directories
+sudo chown -R $(whoami) ~/.config ~/.local
+chmod -R 755 ~/.config ~/.local
+```
 
-**Symptoms:**
-- NVM installs but Node.js commands aren't recognized
-- npm package installations fail
+### Python Environment
 
-**Solutions:**
-1. Manually load NVM in current shell:
-   ```bash
-   export NVM_DIR="$HOME/.nvm"
-   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-   ```
-2. Install Node.js directly:
-   ```bash
-   nvm install --lts
-   nvm use --lts
-   ```
+Python setup now properly handles PEP 668 restrictions ("externally-managed-environment") by using pipx and Poetry, eliminating the need for manual intervention.
 
-#### Configuration File Conflicts
+### Node.js Environment
 
-**Symptoms:**
-- Warning messages about existing configuration files
-- Configuration not taking effect after installation
+Node.js detection and installation has been improved to work with both system-installed Node.js and NVM-installed versions.
 
-**Solutions:**
-1. Back up your existing configurations:
-   ```bash
-   mkdir -p ~/.config-backup
-   cp ~/.zshrc ~/.tmux.conf ~/.config/nvim/init.lua ~/.config-backup/
-   ```
-2. Manually merge your custom settings with the new configurations after installation
+### Ruby Environment
 
-#### Tmux Plugin Manager Issues
+Ruby installation now uses a more reliable approach, preferring system Ruby (via Homebrew on macOS or apt on Linux) which avoids RVM installation issues.
 
-**Symptoms:**
-- Tmux plugins not loading
-- Errors when starting Tmux
+### Configuration Files
 
-**Solutions:**
-1. Install TPM manually:
-   ```bash
-   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-   ```
-2. Inside Tmux, press `Ctrl-a` followed by `I` to install plugins
+Configuration backup is now offered automatically if existing configurations are detected.
 
-### System-Specific Issues
+### Still Having Problems?
 
-#### macOS
-
-- **Homebrew Permission Issues**: Run the Homebrew installer with proper permissions:
-  ```bash
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ```
-
-- **macOS Python Issues**: Use the latest Python from Homebrew:
-  ```bash
-  brew install python
-  ```
-
-#### Linux (Debian/Ubuntu)
-
-- **Missing Dependencies**: Ensure build tools are installed:
-  ```bash
-  sudo apt update
-  sudo apt install build-essential
-  ```
-
-- **Permission Issues**: Make sure your user has access to necessary directories:
-  ```bash
-  sudo chown -R $(whoami) ~/.config ~/.local
-  ```
-
-### Verification and Recovery
-
-If you encounter issues after installation:
-
-1. Run the verification script to identify problems:
-   ```bash
-   ./verify.sh
-   ```
-
-2. Run the installation in recovery mode to fix issues:
-   ```bash
-   ./install.sh --recover
-   ```
-
-3. For serious issues, you can reset the environment (warning: this will remove your configurations):
-   ```bash
-   rm -rf ~/.config/nvim ~/.tmux.conf ~/.zshrc.d
-   ```
-   Then run the installation again.
-
-### Getting Help
-
-If you continue experiencing issues:
+If you're still experiencing issues:
 
 1. Check the installation log: `install_log.txt`
 2. Run the pre-check script before installation: `./pre-check.sh`
-3. Open an issue on the GitHub repository with your specific error messages
+3. Use the verification script to identify problems: `./verify.sh`
+4. Open an issue on the GitHub repository with your specific error messages
+
+### Getting Help
+
+For detailed help with specific components:
+
+- **Tmux**: Press `Ctrl+a ?` for a list of key bindings
+- **Neovim**: Type `:help` within Neovim
+- **Shell**: Review the aliases with `alias` command
+- **Project templates**: Run `pyproject`, `nodeproject`, or `rubyproject` without arguments to see usage
 
 ## Contributing
 
