@@ -118,3 +118,5 @@ terraform.tfstate.backup
 # Specific project files to ignore
 install_log.txt
 user_settings.json
+*.bak*
+*.tmp
