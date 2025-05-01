@@ -6,6 +6,30 @@ A comprehensive, structured learning path for mastering terminal-based software 
 ![Version](https://img.shields.io/badge/Version-1.0.0-green)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 
+# Quick Start
+For impatient users who want to get up and running immediately:
+
+```bash
+# Clone the repository
+git clone https://github.com/YourUsername/enhanced-terminal-environment.git
+cd enhanced-terminal-environment
+
+# Run the setup script (works on macOS and most Linux distributions)
+./setup.sh
+
+# Start a new terminal session to load the environment
+source ~/.zshrc
+```
+
+This will install:
+
+- Zsh with Oh My Zsh configuration
+- Tmux with optimized configuration
+- Neovim with programming language support
+- Essential CLI tools for development
+
+See INSTALLATION.md for detailed installation instructions and customization options.
+
 ## Overview
 
 This project provides a progressive approach to learning essential terminal tools for a modern software development workflow:
