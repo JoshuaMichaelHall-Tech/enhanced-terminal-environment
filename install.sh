@@ -400,6 +400,104 @@ recovery_mode() {
     fi
     return 1
 }
+setup_architecture_compatibility() {
+    log_header "Setting up architecture compatibility"
+    
+    # Detect architecture
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        log_info "Detected Apple Silicon Mac (arm64)"
+        ARCH="arm64"
+    else
+        log_info "Detected Intel Mac (x86_64)"
+        ARCH="x86_64"
+    fi
+    
+    # Create modular profile structure
+    log_info "Setting up modular profile structure..."
+    mkdir -p "$HOME/.zprofile.d"
+    
+    if [[ ! -f "$HOME/.zprofile" ]]; then
+        cat > "$HOME/.zprofile" << 'EOF'
+# Load modular profile configs
+for conf in $HOME/.zprofile.d/*.zsh; do
+  [[ -f $conf ]] && source $conf
+done
+EOF
+        log_success "Created modular .zprofile"
+    else
+        log_info ".zprofile already exists"
+    fi
+    
+    # Create repair script for future use
+    log_info "Creating repair script..."
+    cp "$SCRIPT_DIR/scripts/utils/repair-installation.sh" "$HOME/.local/bin/"
+    chmod +x "$HOME/.local/bin/repair-installation.sh"
+    log_success "Created repair script at ~/.local/bin/repair-installation.sh"
+    
+    # Ensure .zprofile is loaded from .zshrc
+    if [[ -f "$HOME/.zshrc" ]]; then
+        if ! grep -q "source.*zprofile" "$HOME/.zshrc"; then
+            log_info "Adding .zprofile sourcing to .zshrc..."
+            echo -e "\n# Source .zprofile for consistent environment\n[[ -f \$HOME/.zprofile ]] && source \$HOME/.zprofile" >> "$HOME/.zshrc"
+            log_success "Added .zprofile sourcing to .zshrc"
+        fi
+    fi
+}
+
+# Setup architecture-specific compatibility
+setup_architecture_compatibility() {
+    log_header "Setting up architecture compatibility"
+    
+    # Detect architecture
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        log_info "Detected Apple Silicon Mac (arm64)"
+        ARCH="arm64"
+    else
+        log_info "Detected Intel Mac (x86_64)"
+        ARCH="x86_64"
+    fi
+    
+    # Create modular profile structure
+    log_info "Setting up modular profile structure..."
+    mkdir -p "$HOME/.zprofile.d"
+    
+    if [[ ! -f "$HOME/.zprofile" ]]; then
+        cat > "$HOME/.zprofile" << 'EOF'
+# Load modular profile configs
+for conf in $HOME/.zprofile.d/*.zsh; do
+  [[ -f $conf ]] && source $conf
+done
+EOF
+        log_success "Created modular .zprofile"
+    else
+        log_info ".zprofile already exists"
+    fi
+    
+    # Setup path management
+    log_info "Configuring path management..."
+    if bash "$SCRIPT_DIR/scripts/utils/path-management.sh"; then
+        log_success "Path management configured successfully"
+    else
+        log_warning "Failed to configure path management"
+    fi
+    
+    # Setup tmux compatibility
+    log_info "Configuring tmux compatibility..."
+    if bash "$SCRIPT_DIR/scripts/utils/tmux-fix.sh"; then
+        log_success "Tmux compatibility configured successfully"
+    else
+        log_warning "Failed to configure tmux compatibility"
+    fi
+    
+    # Ensure .zprofile is loaded from .zshrc
+    if [[ -f "$HOME/.zshrc" ]]; then
+        if ! grep -q "source.*zprofile" "$HOME/.zshrc"; then
+            log_info "Adding .zprofile sourcing to .zshrc..."
+            echo -e "\n# Source .zprofile for consistent environment\n[[ -f \$HOME/.zprofile ]] && source \$HOME/.zprofile" >> "$HOME/.zshrc"
+            log_success "Added .zprofile sourcing to .zshrc"
+        fi
+    fi
+}
 
 # Main function
 main() {
@@ -425,8 +523,11 @@ main() {
         show_summary
     fi
     
-        # Create all essential directories first
-        create_essential_directories
+    # Create all essential directories first
+    create_essential_directories
+
+    # Setup architecture compatibility
+    setup_architecture_compatibility
 
     # Core system setup
     if [[ "$CORE_INSTALLED" == "false" ]]; then
@@ -469,6 +570,8 @@ main() {
         copy_config_files
     fi
     
+    validate_functions_sh
+
     # Installation complete
     log_header "Installation Complete!"
     echo -e "${GREEN}Enhanced Terminal Environment has been successfully installed!${NC}"

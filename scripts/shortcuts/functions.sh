@@ -333,7 +333,7 @@ gclone() {
     if ! command_exists git; then
         log_error "Git is not installed"
         return 1
-    }
+    fi
     
     log_info "Cloning repository: $repo"
     # Clone the repository
@@ -369,13 +369,13 @@ gcreate() {
     if ! command_exists git; then
         log_error "Git is not installed"
         return 1
-    }
+    fi
     
     # Check if we're in a git repository
     if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         log_error "Not inside a Git repository"
         return 1
-    }
+    fi
     
     # Create branch name if not provided
     if [[ -z "$branch_name" ]]; then
@@ -387,7 +387,7 @@ gcreate() {
     if ! git checkout -b "$branch_name"; then
         log_error "Failed to create branch: $branch_name"
         return 1
-    }
+    fi
     
     log_success "Created and switched to branch: $branch_name"
     return 0
@@ -400,13 +400,13 @@ gstats() {
     if ! command_exists git; then
         log_error "Git is not installed"
         return 1
-    }
+    fi
     
     # Check if we're in a git repository
     if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         log_error "Not inside a Git repository"
         return 1
-    }
+    fi
     
     # Get repository info
     local branch commits contributors last_commit modified_files
@@ -466,7 +466,7 @@ dclean() {
     if ! command_exists docker; then
         log_error "Docker is not installed"
         return 1
-    }
+    fi
     
     log_info "Cleaning up Docker resources..."
     
@@ -520,13 +520,13 @@ drestart() {
     if ! command_exists docker; then
         log_error "Docker is not installed"
         return 1
-    }
+    fi
     
     log_info "Restarting container: $container"
     if ! docker restart "$container"; then
         log_error "Failed to restart container"
         return 1
-    }
+    fi
     
     log_success "Container $container restarted"
     return 0
@@ -548,14 +548,14 @@ dexec() {
     if ! command_exists docker; then
         log_error "Docker is not installed"
         return 1
-    }
+    fi
     
     log_info "Executing in container $container: $cmd"
     # shellcheck disable=SC2086
     if ! docker exec -it "$container" $cmd; then
         log_error "Failed to execute command in container"
         return 1
-    }
+    fi
     
     return 0
 }
@@ -573,7 +573,7 @@ dsh() {
     if ! command_exists fzf; then
         log_error "fzf is not installed"
         return 1
-    }
+    fi
     
     # Get list of containers
     local containers
@@ -582,7 +582,7 @@ dsh() {
     if [[ -z "$containers" ]]; then
         log_error "No running containers found"
         return 1
-    }
+    fi
     
     # Select container with fzf
     local container
@@ -591,7 +591,7 @@ dsh() {
     if [[ -z "$container" ]]; then
         log_warning "No container selected"
         return 1
-    }
+    fi
     
     # Execute shell in container
     log_info "Opening shell in container: $container"
@@ -1021,7 +1021,7 @@ pgbackup() {
     if ! pg_dump "$db_name" > "$output_file"; then
         log_error "Failed to backup database"
         return 1
-    }
+    fi
     
     local file_size
     file_size=$(du -h "$output_file" | cut -f1)
@@ -1050,14 +1050,14 @@ pgrestore() {
     if ! command_exists psql; then
         log_error "psql is not installed"
         return 1
-    }
+    fi
     
     log_info "Restoring PostgreSQL backup from $input_file to $db_name..."
     
     if ! psql "$db_name" < "$input_file"; then
         log_error "Failed to restore database"
         return 1
-    }
+    fi
     
     log_success "Restore completed to database: $db_name"
     return 0
@@ -1077,14 +1077,14 @@ pgcreate() {
     if ! command_exists createdb; then
         log_error "createdb is not installed"
         return 1
-    }
+    fi
     
     log_info "Creating PostgreSQL database: $db_name..."
     
     if ! createdb "$db_name"; then
         log_error "Failed to create database"
         return 1
-    }
+    fi
     
     log_success "Database created: $db_name"
     return 0
@@ -1097,7 +1097,7 @@ dbsh() {
     if ! command_exists fzf; then
         log_error "fzf is not installed"
         return 1
-    }
+    fi
     
     # Determine available database tools
     local db_options=()
@@ -1254,7 +1254,7 @@ vf() {
     if ! command_exists fzf; then
         log_error "fzf is not installed"
         return 1
-    }
+    fi
     
     local preview_cmd="cat {}"
     
@@ -1293,7 +1293,7 @@ proj() {
     if ! command_exists fzf; then
         log_error "fzf is not installed"
         return 1
-    }
+    fi
     
     # Find project directories
     local project_dirs
@@ -1336,7 +1336,7 @@ weather() {
     if ! command_exists curl; then
         log_error "curl is not installed"
         return 1
-    }
+    fi
     
     if [[ -z "$city" ]]; then
         # Try to get location from IP
@@ -1364,7 +1364,7 @@ cheatsheet() {
     if ! command_exists curl; then
         log_error "curl is not installed"
         return 1
-    }
+    fi
     
     log_info "Cheat sheet for $command:"
     curl -s "cheat.sh/$command"
@@ -1408,7 +1408,7 @@ ipinfo() {
     if ! command_exists curl; then
         log_error "curl is not installed"
         return 1
-    }
+    fi
     
     if [[ -z "$ip" ]]; then
         log_info "Getting information for your public IP..."
@@ -1525,7 +1525,7 @@ timeout_cmd() {
     if ! command_exists timeout; then
         log_error "timeout command is not available"
         return 1
-    }
+    fi
     
     timeout "$timeout" $cmd
     local status=$?

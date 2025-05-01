@@ -68,13 +68,29 @@ if [[ "$OS" == "macOS" ]]; then
     if ! command -v brew &> /dev/null; then
         echo -e "${BLUE}Installing Homebrew...${NC}"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        
-        # Add Homebrew to PATH
+    
+        # Add Homebrew to PATH based on architecture - now using .zprofile
         if [[ "$(uname -m)" == "arm64" ]]; then
-            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+            # For Apple Silicon
+            if ! grep -q "opt/homebrew/bin/brew" "$HOME/.zprofile" 2>/dev/null; then
+                mkdir -p "$HOME/.zprofile.d"
+                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' > "$HOME/.zprofile.d/homebrew.zsh"
+                echo '# Load modular profile configs' > "$HOME/.zprofile"
+                echo 'for conf in $HOME/.zprofile.d/*.zsh; do' >> "$HOME/.zprofile"
+                echo '  [[ -f $conf ]] && source $conf' >> "$HOME/.zprofile"
+                echo 'done' >> "$HOME/.zprofile"
+            fi
             eval "$(/opt/homebrew/bin/brew shellenv)"
         else
-            echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zshrc
+            # For Intel
+            if ! grep -q "usr/local/bin/brew" "$HOME/.zprofile" 2>/dev/null; then
+                mkdir -p "$HOME/.zprofile.d"
+                echo 'eval "$(/usr/local/bin/brew shellenv)"' > "$HOME/.zprofile.d/homebrew.zsh"
+                echo '# Load modular profile configs' > "$HOME/.zprofile"
+                echo 'for conf in $HOME/.zprofile.d/*.zsh; do' >> "$HOME/.zprofile"
+                echo '  [[ -f $conf ]] && source $conf' >> "$HOME/.zprofile"
+                echo 'done' >> "$HOME/.zprofile"
+            fi
             eval "$(/usr/local/bin/brew shellenv)"
         fi
     else
