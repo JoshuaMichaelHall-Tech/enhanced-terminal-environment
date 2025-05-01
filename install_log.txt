@@ -1,5 +1,5 @@
 Enhanced Terminal Environment Installation Log
-Date: Thu May  1 06:13:12 CDT 2025
+Date: Thu May  1 07:25:49 CDT 2025
 User: jmh
 System: Darwin Mac.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:32:05 PDT 2025; root:xnu-11417.101.15~117/RELEASE_ARM64_T8132 arm64
 ----------------------------------------
@@ -36,7 +36,7 @@ Continue with installation: y
 [0;36m[1mSetting up core environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-Thu May  1 06:13:19 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+Thu May  1 07:25:55 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
 [0;34mDetected macOS system[0m
 [0;34mCreating configuration directories...[0m
 [0;34mCreating directory: /Users/jmh/.config/nvim[0m
@@ -60,6 +60,9 @@ Thu May  1 06:13:19 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;32mhtop already installed, skipping...[0m
 [0;32mwget already installed, skipping...[0m
 [0;32mcurl already installed, skipping...[0m
+[0;32mpython3 already installed, skipping...[0m
+[0;32mnode already installed, skipping...[0m
+[0;32mruby already installed, skipping...[0m
 [0;32mGitHub CLI already installed, skipping...[0m
 [0;34mInstalling database tools...[0m
 [0;32mpostgresql@14 already installed, skipping...[0m
@@ -84,7 +87,7 @@ Thu May  1 06:13:19 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mSetting up Python environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
-Thu May  1 06:14:14 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+Thu May  1 07:27:01 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
 [0;34mINFO: Setting up Python development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;32mSUCCESS: Python already installed: 3.13.3[0m
@@ -111,7 +114,7 @@ No dependencies to install or update
 installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
 installation.
 [0;34mINFO: Creating Python project template...[0m
-[0;32mSUCCESS: pyproject function already exists in .zshrc[0m
+[0;34mINFO: Adding pyproject function to .zshrc[0m
 [0;32mSUCCESS: Python environment setup complete![0m
 [0;34mINFO: New commands available:[0m
 [0;34mINFO:   pyproject - Create a new Python project with virtual environment[0m
@@ -123,7 +126,7 @@ installation.
 [0;36m[1mSetting up Node.js/JavaScript environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
-Thu May  1 06:14:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
+Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
 [0;34mINFO: Setting up Node.js development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;32mSUCCESS: Node.js is already installed: v22.15.0[0m
@@ -139,7 +142,7 @@ Thu May  1 06:14:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mSetting up Ruby environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
-Thu May  1 06:14:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+Thu May  1 07:27:04 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
 [0;34mINFO: Setting up Ruby development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;34mINFO: Ruby is already installed: ruby 3.2.6 (2024-10-30 revision 63aeb018eb) [arm64-darwin24][0m
@@ -162,6 +165,8 @@ Thu May  1 06:14:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m==================================================[0m
 [0;34mINFO: Copying Neovim configuration files...[0m
 [0;32mSUCCESS: Copied Neovim configuration files to /Users/jmh/.config/nvim[0m
+[0;34mINFO: Running enhanced Neovim setup...[0m
+[0;32mSUCCESS: Neovim enhanced setup completed successfully[0m
 [0;34mINFO: Copying Tmux configuration file...[0m
 [0;32mSUCCESS: Copied Tmux configuration file to /Users/jmh/.tmux.conf[0m
 [0;34mINFO: Copying Zsh configuration file...[0m
@@ -169,7 +174,8 @@ Thu May  1 06:14:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;34mINFO: Copying Zsh aliases configuration file...[0m
 [0;32mSUCCESS: Copied Zsh aliases configuration file to /Users/jmh/.zsh/aliases.zsh[0m
 [0;34mINFO: Copying Git configuration file...[0m
-[0;32mSUCCESS: Copied Git configuration file to /Users/jmh/.gitconfig[0m
+[0;31mERROR: Failed to copy Git configuration file[0m
+[0;33mWARNING: Failed to copy Git configuration, but continuing installation[0m
 
 [0;36m[1mSetting up custom functions[0m
 [0;36m==================================================[0m

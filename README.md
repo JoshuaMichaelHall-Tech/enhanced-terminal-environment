@@ -215,6 +215,17 @@ Node.js detection and installation has been improved to work with both system-in
 
 Ruby installation now uses a more reliable approach, preferring system Ruby (via Homebrew on macOS or apt on Linux) which avoids RVM installation issues.
 
+### Neovim Setup
+
+The Enhanced Terminal Environment now includes comprehensive Neovim setup that:
+
+- Configures all language providers (Python, Node.js, Ruby, Perl)
+- Automatically detects available languages on your system
+- Properly configures init.lua with sensible defaults
+- Ensures a smooth, warning-free Neovim experience
+
+When running `:checkhealth` in Neovim, you should see all providers properly configured based on your installed languages.
+
 ### Configuration Files
 
 Configuration backup is now offered automatically if existing configurations are detected.

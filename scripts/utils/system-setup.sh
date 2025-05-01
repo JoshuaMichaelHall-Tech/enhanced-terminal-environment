@@ -84,7 +84,7 @@ if [[ "$OS" == "macOS" ]]; then
     echo -e "${BLUE}Installing essential tools...${NC}"
     
     # Install essential tools with idempotence checks
-    for tool in neovim tmux zsh git ripgrep fzf fd jq bat eza htop wget curl; do
+    for tool in neovim tmux zsh git ripgrep fzf fd jq bat eza htop wget curl python3 node ruby; do
         if ! brew list "$tool" &>/dev/null; then
             echo -e "${BLUE}Installing $tool...${NC}"
             brew install "$tool"
@@ -168,7 +168,7 @@ elif [[ "$OS" == "Linux" ]]; then
     echo -e "${BLUE}Installing essential tools...${NC}"
     
     # Install essential tools with idempotence checks
-    for tool in build-essential neovim tmux zsh git curl wget unzip ripgrep fzf jq htop gnupg apt-transport-https ca-certificates software-properties-common; do
+    for tool in build-essential neovim tmux zsh git curl wget unzip ripgrep fzf jq htop gnupg python3 python3-pip nodejs npm ruby; do
         if ! is_installed "$tool"; then
             echo -e "${BLUE}Installing $tool...${NC}"
             sudo apt install -y "$tool"

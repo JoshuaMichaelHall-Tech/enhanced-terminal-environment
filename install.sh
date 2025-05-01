@@ -273,6 +273,14 @@ copy_config_files() {
     copy_config_dir "$SCRIPT_DIR/configs/neovim" "$HOME/.config/nvim" "Neovim" || 
         log_warning "Failed to copy Neovim configuration, but continuing installation"
     
+    # Add enhanced Neovim setup
+    log_info "Running enhanced Neovim setup..."
+    if bash "$SCRIPT_DIR/scripts/utils/neovim-enhanced-setup.sh"; then
+        log_success "Neovim enhanced setup completed successfully"
+    else
+        log_warning "Neovim enhanced setup had issues, but continuing installation"
+    fi
+
     # Tmux setup
     copy_config_file "$SCRIPT_DIR/configs/tmux/.tmux.conf" "$HOME/.tmux.conf" "Tmux" || 
         log_warning "Failed to copy Tmux configuration, but continuing installation"

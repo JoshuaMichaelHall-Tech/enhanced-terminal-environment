@@ -319,6 +319,49 @@ verify_ruby_env() {
     fi
 }
 
+verify_neovim_providers() {
+    log_header "Neovim Providers"
+    
+    if ! command_exists nvim; then
+        log_error "Neovim is not installed"
+        return 1
+    fi
+    
+    # Check providers by running a simple health check and parsing results
+    local health_output
+    health_output=$(nvim --headless -c "checkhealth provider" -c "q" 2>&1)
+    
+    # Check Python provider
+    if echo "$health_output" | grep -q "Python 3 provider.*OK"; then
+        log_success "Python provider: Configured properly"
+    else
+        log_warning "Python provider: Not configured properly"
+    fi
+    
+    # Check Node.js provider
+    if echo "$health_output" | grep -q "Node.js provider.*OK"; then
+        log_success "Node.js provider: Configured properly"
+    else
+        log_warning "Node.js provider: Not configured properly"
+    fi
+    
+    # Check Ruby provider
+    if echo "$health_output" | grep -q "Ruby provider.*OK"; then
+        log_success "Ruby provider: Configured properly"
+    else
+        log_warning "Ruby provider: Not configured properly"
+    fi
+    
+    # Check Perl provider
+    if echo "$health_output" | grep -q "Perl provider.*OK"; then
+        log_success "Perl provider: Configured properly"
+    else
+        log_warning "Perl provider: Not configured properly"
+    fi
+    
+    return 0
+}
+
 # Verify custom functions
 verify_functions() {
     log_header "Custom Functions"
@@ -395,6 +438,7 @@ main() {
     verify_python_env
     verify_nodejs_env
     verify_ruby_env
+    verify_neovim_providers
     verify_functions
     summarize_verification
 }
