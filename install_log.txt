@@ -1,5 +1,5 @@
 Enhanced Terminal Environment Installation Log
-Date: Thu May  1 08:09:11 CDT 2025
+Date: Thu May  1 10:20:24 CDT 2025
 User: jmh
 System: Darwin Mac.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:32:05 PDT 2025; root:xnu-11417.101.15~117/RELEASE_ARM64_T8132 arm64
 ----------------------------------------
@@ -33,10 +33,73 @@ Continue with installation: y
 [0;34mINFO: Directory already exists: /Users/jmh/.local/share/node-templates[0m
 [0;34mINFO: Directory already exists: /Users/jmh/.local/share/ruby-templates[0m
 
+[0;36m[1mSetting up architecture compatibility[0m
+[0;36m==================================================[0m
+[0;34mINFO: Detected Apple Silicon Mac (arm64)[0m
+[0;34mINFO: Setting up modular profile structure...[0m
+[0;34mINFO: .zprofile already exists[0m
+[0;34mINFO: Configuring path management...[0m
+[0;32mSUCCESS: Path management configured successfully[0m
+[0;34mINFO: Configuring tmux compatibility...[0m
+[0;32mSUCCESS: Tmux compatibility configured successfully[0m
+
 [0;36m[1mSetting up core environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-Thu May  1 08:09:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+Thu May  1 10:20:30 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+[0;34mDetected macOS system[0m
+[0;34mCreating configuration directories...[0m
+[0;34mCreating directory: /Users/jmh/.config/nvim[0m
+[0;34mCreating directory: /Users/jmh/.config/tmux[0m
+[0;34mCreating directory: /Users/jmh/.tmux/plugins[0m
+[0;34mCreating directory: /Users/jmh/.zsh[0m
+[0;34mCreating directory: /Users/jmh/.local/bin[0m
+[0;34mCreating directory: /Users/jmh/projects[0m
+[0;34mInstalling Homebrew...[0m
+==> Checking for `sudo` access (which may request your password)...
+==> This script will install:
+/opt/homebrew/bin/brew
+/opt/homebrew/share/doc/homebrew
+/opt/homebrew/share/man/man1/brew.1
+/opt/homebrew/share/zsh/site-functions/_brew
+/opt/homebrew/etc/bash_completion.d/brew
+/opt/homebrew
+
+Press RETURN/ENTER to continue or any other key to abort:
+[0;31mERROR: Core environment setup failed[0m
+[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+User choice on continuing: n
+[0;34mINFO: Installation aborted by user.[0m
+
+[0;36m[1mRunning in recovery mode[0m
+[0;36m==================================================[0m
+[0;34mINFO: Attempting to resume a previous installation...[0m
+[0;34mINFO: Found previous installation log at: /Users/jmh/repos_tech/terminal-env/install_log.txt[0m
+[0;34mINFO: Creating essential directories...[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/nvim[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.config/tmux[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.tmux/plugins[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.zsh[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/bin[0m
+[0;34mINFO: Directory already exists: /Users/jmh/projects[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/python-templates[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/node-templates[0m
+[0;34mINFO: Directory already exists: /Users/jmh/.local/share/ruby-templates[0m
+
+[0;36m[1mSetting up architecture compatibility[0m
+[0;36m==================================================[0m
+[0;34mINFO: Detected Apple Silicon Mac (arm64)[0m
+[0;34mINFO: Setting up modular profile structure...[0m
+[0;34mINFO: .zprofile already exists[0m
+[0;34mINFO: Configuring path management...[0m
+[0;32mSUCCESS: Path management configured successfully[0m
+[0;34mINFO: Configuring tmux compatibility...[0m
+[0;32mSUCCESS: Tmux compatibility configured successfully[0m
+
+[0;36m[1mSetting up core environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
+Thu May  1 10:29:18 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
 [0;34mDetected macOS system[0m
 [0;34mCreating configuration directories...[0m
 [0;34mCreating directory: /Users/jmh/.config/nvim[0m
@@ -71,130 +134,3 @@ Thu May  1 08:09:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;32mHTTPie already installed, skipping...[0m
 [0;34mInstalling cloud tools...[0m
 [0;32mawscli already installed, skipping...[0m
-[0;32mansible already installed, skipping...[0m
-[0;32mTerraform or OpenTofu already installed.[0m
-[0;32mTmux Plugin Manager already installed.[0m
-[0;32mOh My Zsh already installed.[0m
-[0;34mInstalling Zsh plugins...[0m
-[0;32mzsh-autosuggestions already installed.[0m
-[0;32mzsh-syntax-highlighting already installed.[0m
-[0;32mFZF already installed.[0m
-/Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh: line 344: getent: command not found
-[0;34mSetting Zsh as default shell...[0m
-Changing shell for jmh.
-[0;32mSystem setup complete![0m
-[0;33mNote: Some changes may require logging out and back in to take effect.[0m
-[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-
-[0;36m[1mSetting up Python environment[0m
-[0;36m==================================================[0m
-[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
-Thu May  1 08:11:02 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
-[0;34mINFO: Setting up Python development environment...[0m
-[0;34mINFO: Detected macOS system[0m
-[0;32mSUCCESS: Python already installed: 3.9.6[0m
-[0;32mSUCCESS: pipx already installed[0m
-[0;32mSUCCESS: Poetry already installed[0m
-Updating Poetry version ...
-
-Using version ^2.1.2 for poetry
-
-Updating dependencies
-Resolving dependencies...
-
-No dependencies to install or update
-[0;34mINFO: Installing essential Python development tools...[0m
-[0;32mSUCCESS: ipython already installed, skipping...[0m
-[0;32mSUCCESS: black already installed, skipping...[0m
-[0;32mSUCCESS: flake8 already installed, skipping...[0m
-[0;32mSUCCESS: pylint already installed, skipping...[0m
-[0;32mSUCCESS: mypy already installed, skipping...[0m
-[0;32mSUCCESS: pytest already installed, skipping...[0m
-[0;32mSUCCESS: httpie already installed, skipping...[0m
-[0;34mINFO: Adding pytest-cov plugin to pytest...[0m
-⚠️ pytest-cov already seems to be injected in 'pytest'. Not modifying existing
-installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
-installation.
-[0;34mINFO: Creating Python project template...[0m
-[0;32mSUCCESS: pyproject function already exists in .zshrc[0m
-[0;32mSUCCESS: Python environment setup complete![0m
-[0;34mINFO: New commands available:[0m
-[0;34mINFO:   pyproject - Create a new Python project with virtual environment[0m
-[0;34mINFO:   poetry - Manage Python packages and dependencies[0m
-[0;34mINFO:   pipx - Install and run Python applications in isolated environments[0m
-[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
-[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
-
-[0;36m[1mSetting up Node.js/JavaScript environment[0m
-[0;36m==================================================[0m
-[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
-Thu May  1 08:11:05 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
-[0;34mINFO: Setting up Node.js development environment...[0m
-[0;34mINFO: Detected macOS system[0m
-[0;32mSUCCESS: Node.js is already installed: v22.15.0[0m
-[0;34mINFO: Creating Node.js project template...[0m
-[0;34mINFO: Adding nodeproject function to .zshrc[0m
-[0;32mSUCCESS: Node.js environment setup complete![0m
-[0;34mINFO: New commands available:[0m
-[0;34mINFO:   nodeproject - Create a new Node.js project[0m
-[0;34mINFO: Node.js packages can be installed globally with: npm install -g <package-name>[0m
-[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
-[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
-
-[0;36m[1mSetting up Ruby environment[0m
-[0;36m==================================================[0m
-[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
-Thu May  1 08:11:05 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
-[0;34mINFO: Setting up Ruby development environment...[0m
-[0;34mINFO: Detected macOS system[0m
-[0;34mINFO: Ruby is already installed: ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.arm64e-darwin24][0m
-[0;34mINFO: Installing essential Ruby gems...[0m
-[0;32mSUCCESS: bundler already installed, skipping...[0m
-[0;34mINFO: Installing pry...[0m
-ERROR:  While executing gem ... (Gem::FilePermissionError)
-    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
-[0;33mWARNING: Failed to install pry, continuing anyway...[0m
-[0;34mINFO: Installing rubocop...[0m
-ERROR:  While executing gem ... (Gem::FilePermissionError)
-    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
-[0;33mWARNING: Failed to install rubocop, continuing anyway...[0m
-[0;34mINFO: Installing solargraph...[0m
-ERROR:  While executing gem ... (Gem::FilePermissionError)
-    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
-[0;33mWARNING: Failed to install solargraph, continuing anyway...[0m
-[0;32mSUCCESS: rake already installed, skipping...[0m
-[0;34mINFO: Installing rspec...[0m
-ERROR:  While executing gem ... (Gem::FilePermissionError)
-    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
-[0;33mWARNING: Failed to install rspec, continuing anyway...[0m
-[0;34mINFO: Creating Ruby project template...[0m
-[0;34mINFO: Adding rubyproject function to .zshrc[0m
-[0;32mSUCCESS: Ruby environment setup complete![0m
-[0;34mINFO: New commands available:[0m
-[0;34mINFO:   rubyproject - Create a new Ruby project[0m
-[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
-[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
-
-[0;36m[1mCopying configuration files[0m
-[0;36m==================================================[0m
-[0;34mINFO: Copying Neovim configuration files...[0m
-[0;32mSUCCESS: Copied Neovim configuration files to /Users/jmh/.config/nvim[0m
-[0;34mINFO: Running enhanced Neovim setup...[0m
-[0;32mSUCCESS: Neovim enhanced setup completed successfully[0m
-[0;34mINFO: Copying Tmux configuration file...[0m
-[0;32mSUCCESS: Copied Tmux configuration file to /Users/jmh/.tmux.conf[0m
-[0;34mINFO: Copying Zsh configuration file...[0m
-[0;32mSUCCESS: Copied Zsh configuration file to /Users/jmh/.zshrc[0m
-[0;34mINFO: Copying Zsh aliases configuration file...[0m
-[0;32mSUCCESS: Copied Zsh aliases configuration file to /Users/jmh/.zsh/aliases.zsh[0m
-[0;34mINFO: Copying Git configuration file...[0m
-[0;32mSUCCESS: Copied Git configuration file to /Users/jmh/.gitconfig[0m
-
-[0;36m[1mSetting up custom functions[0m
-[0;36m==================================================[0m
-[0;34mINFO: Copying custom functions configuration file...[0m
-[0;32mSUCCESS: Copied custom functions configuration file to /Users/jmh/.local/bin/functions.sh[0m
-[0;32mSUCCESS: Functions sourcing already in .zshrc[0m
-
-[0;36m[1mInstallation Complete![0m
-[0;36m==================================================[0m

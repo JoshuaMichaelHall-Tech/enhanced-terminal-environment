@@ -67,7 +67,7 @@ if [[ "$OS" == "macOS" ]]; then
     # Check for Homebrew
     if ! command -v brew &> /dev/null; then
         echo -e "${BLUE}Installing Homebrew...${NC}"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     
         # Add Homebrew to PATH based on architecture - now using .zprofile
         if [[ "$(uname -m)" == "arm64" ]]; then

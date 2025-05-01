@@ -294,27 +294,32 @@ main() {
 
     # Install core dependencies based on OS
     if [[ "$OS" == "macOS" ]]; then
-        # Check for Homebrew
-        if ! command_exists "brew"; then
-            log_info "Installing Homebrew..."
-            run_command '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"' \
-                "Failed to install Homebrew"
-            
-            # Add Homebrew to PATH based on architecture
-            if [[ "$(uname -m)" == "arm64" ]]; then
-                if ! grep -q "opt/homebrew/bin/brew" "$HOME/.zshrc"; then
-                    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zshrc"
-                fi
-                eval "$(/opt/homebrew/bin/brew shellenv)"
-            else
-                if ! grep -q "usr/local/bin/brew" "$HOME/.zshrc"; then
-                    echo 'eval "$(/usr/local/bin/brew shellenv)"' >> "$HOME/.zshrc"
-                fi
-                eval "$(/usr/local/bin/brew shellenv)"
-            fi
-        else
-            log_success "Homebrew already installed"
-        fi
+      # Check for Homebrew
+      if ! command -v brew &> /dev/null; then
+          echo -e "${BLUE}Installing Homebrew...${NC}"
+          # Use a non-interactive installation approach
+          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+          # Add Homebrew to PATH based on architecture
+          if [[ "$(uname -m)" == "arm64" ]]; then
+              echo -e "${BLUE}Configuring Homebrew for Apple Silicon...${NC}"
+              echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' > "$HOME/.zprofile.d/10-homebrew.zsh"
+              eval "$(/opt/homebrew/bin/brew shellenv)"
+          else
+              echo -e "${BLUE}Configuring Homebrew for Intel...${NC}"
+              echo 'eval "$(/usr/local/bin/brew shellenv)"' > "$HOME/.zprofile.d/10-homebrew.zsh"
+              eval "$(/usr/local/bin/brew shellenv)"
+          fi
+      else
+          echo -e "${BLUE}Homebrew already installed.${NC}"
+          # Still ensure proper path is set in .zprofile.d
+          mkdir -p "$HOME/.zprofile.d"
+          if [[ "$(uname -m)" == "arm64" ]]; then
+              echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' > "$HOME/.zprofile.d/10-homebrew.zsh"
+          else
+              echo 'eval "$(/usr/local/bin/brew shellenv)"' > "$HOME/.zprofile.d/10-homebrew.zsh"
+          fi
+      fi
         
         log_info "Installing essential tools..."
         
