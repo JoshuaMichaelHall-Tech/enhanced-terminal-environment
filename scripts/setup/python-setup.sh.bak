@@ -48,10 +48,11 @@ command_exists() {
 create_templates_dir() {
     local dir="$HOME/.local/share/python-templates"
     
-    echo "Creating Python templates directory: $dir"
-    mkdir -p "$dir" || { echo -e "${RED}ERROR: Failed to create templates directory${NC}" >&2; return 1; }
+    if [[ ! -d "$dir" ]]; then
+        log_info "Creating Python templates directory: $dir"
+        mkdir -p "$dir" || handle_error "Failed to create templates directory"
+    fi
     
-    # Explicitly return the directory path
     echo "$dir"
 }
 
@@ -454,7 +455,7 @@ echo -e "  pip install -e \".[dev]\""
 EOL
 
     # Make template executable
-    chmod +x "$template_script" || handle_error "Failed to make template script executable" || handle_error "Failed to make template script executable"
+    chmod +x "$template_script" || handle_error "Failed to make template script executable"
 
     # Add function to .zshrc
     add_function_to_zshrc "pyproject" "$template_script"

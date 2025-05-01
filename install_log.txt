@@ -189,3 +189,45 @@ Writing lock file
 [0;31mERROR: Script failed with exit code 1[0m
 [0;31mERROR: Python environment setup failed[0m
 [0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
+
+[0;36m[1mRunning in recovery mode[0m
+[0;36m==================================================[0m
+[0;34mINFO: Attempting to resume a previous installation...[0m
+[0;34mINFO: Found previous installation log at: /Users/jmh/repos_tech/terminal-env/install_log.txt[0m
+[0;32mSUCCESS: Core environment was successfully installed previously[0m
+
+[0;36m[1mSetting up Python environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+Wed Apr 30 20:54:25 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+[0;34mINFO: Setting up Python development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;32mSUCCESS: Python already installed: 3.13.3[0m
+[0;32mSUCCESS: pipx already installed[0m
+[0;32mSUCCESS: Poetry already installed[0m
+Updating Poetry version ...
+
+Using version ^2.1.2 for poetry
+
+Updating dependencies
+Resolving dependencies...
+
+No dependencies to install or update
+[0;34mINFO: Installing essential Python development tools...[0m
+[0;32mSUCCESS: ipython already installed, skipping...[0m
+[0;32mSUCCESS: black already installed, skipping...[0m
+[0;32mSUCCESS: flake8 already installed, skipping...[0m
+[0;32mSUCCESS: pylint already installed, skipping...[0m
+[0;32mSUCCESS: mypy already installed, skipping...[0m
+[0;32mSUCCESS: pytest already installed, skipping...[0m
+[0;32mSUCCESS: httpie already installed, skipping...[0m
+[0;34mINFO: Adding pytest-cov plugin to pytest...[0m
+⚠️ pytest-cov already seems to be injected in 'pytest'. Not modifying existing
+installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
+installation.
+[0;34mINFO: Creating Python project template...[0m
+/Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh: line 236: Creating Python templates directory: /Users/jmh/.local/share/python-templates
+/Users/jmh/.local/share/python-templates/basic_project.sh: No such file or directory
+[0;31mERROR: Script failed with exit code 1[0m
+[0;31mERROR: Python environment setup failed[0m
+[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
