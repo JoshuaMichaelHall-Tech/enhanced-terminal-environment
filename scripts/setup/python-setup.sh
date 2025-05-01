@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Python development environment setup script
-# Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
-# Version: 2.0
+# Python development environment setup script - PEP 668 compatible
+# Part of Enhanced Terminal Environment
+# Version: 3.0
 
 # Exit on error, undefined variables, and propagate pipe failures
 set -euo pipefail
@@ -44,20 +44,6 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Ensure a Python command exists and extract version
-check_python_version() {
-    local python_cmd="$1"
-    
-    if command_exists "$python_cmd"; then
-        # Get Python version
-        local version
-        version=$("$python_cmd" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-        echo "$version"
-    else
-        echo ""
-    fi
-}
-
 # Create project templates directory
 create_templates_dir() {
     local dir="$HOME/.local/share/python-templates"
@@ -98,53 +84,34 @@ main() {
         readonly OS="macOS"
         log_info "Detected macOS system"
         
-        # Install Python via Homebrew on macOS
-        local python_version
-        python_version=$(check_python_version "python3")
-        
-        if [[ -z "$python_version" ]]; then
-            log_info "Installing Python via Homebrew..."
-            brew install python@3.11 || handle_error "Failed to install Python"
-            
-            # Check if Python was installed successfully
-            python_version=$(check_python_version "python3")
-            if [[ -z "$python_version" ]]; then
-                handle_error "Python installation failed"
-            fi
+        # Check Python installation
+        if command_exists python3; then
+            PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+            log_success "Python already installed: $PYTHON_VERSION"
         else
-            log_success "Python already installed: $python_version"
+            log_info "Installing Python via Homebrew..."
+            if ! brew install python; then
+                handle_error "Failed to install Python"
+            fi
         fi
         
-        # Install pipx
-        if ! command_exists "pipx"; then
-            log_info "Installing pipx..."
-            
-            # Make sure pip is installed and up to date
-            python3 -m pip install --upgrade pip || handle_error "Failed to upgrade pip"
-            
-            # Install pipx to user directory
-            python3 -m pip install --user pipx || handle_error "Failed to install pipx"
-            
-            # Ensure pipx binaries are in PATH
-            python3 -m pipx ensurepath || log_warning "Failed to add pipx to PATH"
-            
-            # Add pipx to shell completion if possible
-            if python3 -c "import importlib.util; print(importlib.util.find_spec('pipx') is not None)" 2>/dev/null | grep -q "True"; then
-                if ! grep -q "register-python-argcomplete pipx" "$HOME/.zshrc"; then
-                    echo 'eval "$(register-python-argcomplete pipx)"' >> "$HOME/.zshrc"
-                fi
+        # Install pipx using Homebrew (PEP 668 compatible approach)
+        if ! command_exists pipx; then
+            log_info "Installing pipx via Homebrew..."
+            if ! brew install pipx; then
+                log_warning "Failed to install pipx via Homebrew, trying pip installation..."
+                python3 -m pip install --user pipx || handle_error "Failed to install pipx"
             fi
             
-            # Verify pipx installation
-            if ! command_exists "pipx"; then
-                log_warning "pipx not found in PATH after installation. You may need to restart your shell."
-                log_warning "After restart, if pipx commands aren't recognized, run: python3 -m pipx ensurepath"
-            else
-                log_success "pipx installed successfully"
+            # Ensure pipx binaries are in PATH
+            if command_exists pipx; then
+                log_info "Configuring pipx..."
+                pipx ensurepath || log_warning "Failed to add pipx to PATH"
             fi
         else
             log_success "pipx already installed"
         fi
+        
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         readonly OS="Linux"
         log_info "Detected Linux system"
@@ -154,40 +121,27 @@ main() {
         sudo apt update || handle_error "Failed to update package lists"
         
         # Install Python and related tools on Linux
-        local python_version
-        python_version=$(check_python_version "python3")
-        
-        if [[ -z "$python_version" ]]; then
-            log_info "Installing Python 3..."
-            sudo apt install -y python3 python3-dev python3-venv python3-pip || handle_error "Failed to install Python"
-            
-            # Check if Python was installed successfully
-            python_version=$(check_python_version "python3")
-            if [[ -z "$python_version" ]]; then
-                handle_error "Python installation failed"
-            fi
+        if command_exists python3; then
+            PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+            log_success "Python already installed: $PYTHON_VERSION"
         else
-            log_success "Python already installed: $python_version"
+            log_info "Installing Python 3..."
+            sudo apt install -y python3 python3-dev python3-venv python3-pip || 
+                handle_error "Failed to install Python"
         fi
         
-        # Install pipx
-        if ! command_exists "pipx"; then
+        # Install pipx on Linux
+        if ! command_exists pipx; then
             log_info "Installing pipx..."
-            sudo apt install -y python3-pipx || handle_error "Failed to install pipx"
-            
-            # Ensure pipx is in path
-            pipx ensurepath || log_warning "Failed to add pipx to PATH"
-            
-            # Add pipx to shell completion if possible
-            if ! grep -q "register-python-argcomplete pipx" "$HOME/.zshrc"; then
-                echo 'eval "$(register-python-argcomplete pipx)"' >> "$HOME/.zshrc"
+            # Try apt first, then pip if apt fails
+            if ! sudo apt install -y python3-pipx; then
+                log_warning "Failed to install pipx via apt, trying pip installation..."
+                python3 -m pip install --user pipx || handle_error "Failed to install pipx"
             fi
             
-            # Verify pipx installation
-            if ! command_exists "pipx"; then
-                log_warning "pipx not found in PATH after installation. You may need to restart your shell."
-            else
-                log_success "pipx installed successfully"
+            # Ensure pipx is in path
+            if command_exists pipx; then
+                pipx ensurepath || log_warning "Failed to add pipx to PATH"
             fi
         else
             log_success "pipx already installed"
@@ -196,57 +150,81 @@ main() {
         handle_error "Unsupported operating system: $OSTYPE"
     fi
 
-    # Install Poetry using the official installer
-    if ! command_exists "poetry"; then
+    # Install Poetry using their official installer (more reliable approach)
+    if ! command_exists poetry; then
         log_info "Installing Poetry (Python package manager)..."
-        curl -sSL https://install.python-poetry.org | python3 - || handle_error "Failed to install Poetry"
         
-        # Add Poetry to PATH if not already
-        if ! grep -q "poetry/bin" "$HOME/.zshrc"; then
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
-        fi
+        # Create temporary directory for the installer
+        TEMPDIR=$(mktemp -d)
+        INSTALLER="$TEMPDIR/install-poetry.py"
         
-        # Verify Poetry installation
-        if ! command_exists "poetry"; then
-            log_warning "Poetry not found in PATH after installation. You may need to restart your shell."
-            log_warning "After restart, if poetry commands aren't recognized, add '$HOME/.poetry/bin' to your PATH."
+        # Download the installer
+        if curl -sSL https://install.python-poetry.org -o "$INSTALLER"; then
+            # Run the installer with --user flag to avoid system Python modifications
+            python3 "$INSTALLER" --yes || handle_error "Failed to install Poetry"
+            rm -rf "$TEMPDIR"
+            
+            # Add Poetry to PATH if not already
+            POETRY_BIN_PATH="$HOME/.poetry/bin"
+            if [[ ! -d "$HOME/.local/bin" ]]; then
+                mkdir -p "$HOME/.local/bin"
+            fi
+            
+            # Add to zshrc if not already there
+            if ! grep -q "poetry/bin" "$HOME/.zshrc"; then
+                echo 'export PATH="$HOME/.local/bin:$HOME/.poetry/bin:$PATH"' >> "$HOME/.zshrc"
+                log_info "Added Poetry to PATH in .zshrc"
+            fi
+            
+            log_info "You may need to restart your shell or run 'source ~/.zshrc' for Poetry to be available"
+            
+            # For immediate availability in this script
+            export PATH="$HOME/.local/bin:$POETRY_BIN_PATH:$PATH"
         else
-            log_success "Poetry installed successfully"
+            log_warning "Failed to download Poetry installer, skipping Poetry installation"
         fi
     else
-        log_success "Poetry already installed, upgrading if necessary..."
-        poetry self update || log_warning "Failed to update Poetry"
+        log_success "Poetry already installed"
+        # Try to update but don't fail if it doesn't work
+        poetry self update 2>/dev/null || log_warning "Failed to update Poetry, continuing anyway..."
     fi
 
     # Install essential Python development tools using pipx
-    log_info "Installing essential Python development tools..."
+    if command_exists pipx; then
+        log_info "Installing essential Python development tools..."
 
-    # List of tools to install
-    local PYTHON_TOOLS=(
-        "ipython"
-        "black"
-        "flake8"
-        "pylint"
-        "mypy"
-        "pytest"
-        "httpie"
-        "virtualenv"
-    )
+        # List of tools to install
+        local PYTHON_TOOLS=(
+            "ipython"
+            "black"
+            "flake8"
+            "pylint"
+            "mypy"
+            "pytest"
+            "httpie"
+        )
 
-    # Install each tool if not already installed
-    for tool in "${PYTHON_TOOLS[@]}"; do
-        if ! command_exists "$tool"; then
-            log_info "Installing $tool..."
-            pipx install "$tool" || log_warning "Failed to install $tool, continuing anyway..."
-        else
-            log_success "$tool already installed, skipping..."
+        # Install each tool if not already installed
+        for tool in "${PYTHON_TOOLS[@]}"; do
+            if ! command_exists "$tool"; then
+                log_info "Installing $tool with pipx..."
+                if ! pipx install "$tool" 2>/dev/null; then
+                    log_warning "Failed to install $tool, continuing anyway..."
+                fi
+            else
+                log_success "$tool already installed, skipping..."
+            fi
+        done
+
+        # Install pytest-cov as a pytest plugin if pytest was successfully installed
+        if command_exists pytest; then
+            log_info "Adding pytest-cov plugin to pytest..."
+            if ! pipx inject pytest pytest-cov 2>/dev/null; then
+                log_warning "Failed to add pytest-cov plugin, continuing anyway..."
+            fi
         fi
-    done
-
-    # Install pytest-cov as a pytest plugin
-    if command_exists "pytest"; then
-        log_info "Adding pytest-cov plugin to pytest..."
-        pipx inject pytest pytest-cov || log_warning "Failed to add pytest-cov plugin, continuing anyway..."
+    else
+        log_warning "pipx is not available, skipping installation of Python development tools"
     fi
 
     # Create Python project template
@@ -468,6 +446,7 @@ git add .
 git commit -m "Initial project structure" --no-verify
 
 echo -e "${GREEN}Python project $PROJECT_NAME created successfully with virtual environment!${NC}"
+echo
 echo -e "${YELLOW}To activate the environment, run:${NC}"
 echo -e "  cd ${PROJECT_NAME}"
 echo -e "  source venv/bin/activate" 
@@ -484,8 +463,12 @@ EOL
     log_success "Python environment setup complete!"
     log_info "New commands available:"
     log_info "  pyproject - Create a new Python project with virtual environment"
-    log_info "  poetry - Manage Python packages and dependencies"
-    log_info "  pipx - Install and run Python applications in isolated environments"
+    if command_exists poetry; then
+        log_info "  poetry - Manage Python packages and dependencies"
+    fi
+    if command_exists pipx; then
+        log_info "  pipx - Install and run Python applications in isolated environments"
+    fi
     log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
 }
 
@@ -501,4 +484,3 @@ trap cleanup EXIT
 
 # Run the main function
 main "$@"
-EOL

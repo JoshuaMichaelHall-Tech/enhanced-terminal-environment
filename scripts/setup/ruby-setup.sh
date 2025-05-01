@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Ruby development environment setup script
 # Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
-# Version: 2.0
+# Version: 3.0
 
 # Exit on error, undefined variables, and propagate pipe failures
 set -euo pipefail
@@ -44,6 +44,43 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
+# Install Ruby using Homebrew (macOS fallback)
+install_ruby_homebrew() {
+    if command_exists brew; then
+        log_info "Installing Ruby via Homebrew..."
+        if brew install ruby; then
+            log_success "Ruby installed successfully via Homebrew"
+            # Add Ruby to PATH
+            if ! grep -q "/usr/local/opt/ruby/bin" "$HOME/.zshrc" && ! grep -q "/opt/homebrew/opt/ruby/bin" "$HOME/.zshrc"; then
+                if [[ -d "/usr/local/opt/ruby/bin" ]]; then
+                    echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
+                elif [[ -d "/opt/homebrew/opt/ruby/bin" ]]; then
+                    echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
+                fi
+            fi
+            return 0
+        else
+            log_error "Failed to install Ruby via Homebrew"
+            return 1
+        fi
+    else
+        log_warning "Homebrew not available for Ruby installation fallback"
+        return 1
+    fi
+}
+
+# Install Ruby using apt (Linux fallback)
+install_ruby_apt() {
+    log_info "Installing Ruby via apt..."
+    if sudo apt-get update && sudo apt-get install -y ruby-full build-essential; then
+        log_success "Ruby installed successfully via apt"
+        return 0
+    else
+        log_error "Failed to install Ruby via apt"
+        return 1
+    fi
+}
+
 # Setup RVM (Ruby Version Manager)
 setup_rvm() {
     # If RVM is not installed
@@ -57,29 +94,33 @@ setup_rvm() {
             "hkp://pgp.mit.edu"
         )
         
-        # Try each key server until successful
+        # Try each key server until successful or try direct download
         key_imported=false
-        for server in "${gpg_key_servers[@]}"; do
-            log_info "Trying to import GPG keys from $server..."
-            if gpg --keyserver "$server" --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB; then
-                key_imported=true
-                break
-            fi
-        done
         
-        # If all key servers failed
-        if ! $key_imported; then
-            log_warning "Failed to import GPG keys from all servers. Trying direct download..."
-            
-            # Direct download as a last resort
-            curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-            curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+        # Try direct download first
+        log_info "Trying direct GPG key download..."
+        if curl -sSL https://rvm.io/mpapis.asc | gpg --import - 2>/dev/null &&
+           curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - 2>/dev/null; then
+            key_imported=true
+        else
+            # Try key servers
+            for server in "${gpg_key_servers[@]}"; do
+                log_info "Trying to import GPG keys from $server..."
+                if gpg --keyserver "$server" --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB 2>/dev/null; then
+                    key_imported=true
+                    break
+                fi
+            done
         fi
         
         # Install RVM
         log_info "Downloading and installing RVM..."
         if ! curl -sSL https://get.rvm.io | bash -s stable; then
-            handle_error "Failed to install RVM"
+            log_warning "Failed to install RVM using primary method, trying alternative approach..."
+            if ! \curl -sSL https://get.rvm.io | bash; then
+                log_warning "RVM installation failed. Trying system Ruby fallback..."
+                return 1
+            fi
         fi
         
         # Add RVM to shell profile if not already there
@@ -158,7 +199,13 @@ EOF
 # Capitalize a string
 capitalize() {
     local str="$1"
-    echo "${str^}"
+    # Use Python if available for more reliable capitalization
+    if command_exists python3; then
+        python3 -c "import sys; print(sys.argv[1].capitalize())" "$str"
+    else
+        # Fallback to bash implementation
+        echo "${str^}"
+    fi
 }
 
 # Install Ruby gems
@@ -172,10 +219,19 @@ install_essential_gems() {
         "rake"
     )
     
+    local installed_count=0
+    local total_gems=${#gems[@]}
+    
     for gem in "${gems[@]}"; do
         log_info "Installing ${gem}..."
-        gem install "$gem" || log_warning "Failed to install ${gem}, continuing anyway..."
+        if gem install "$gem" 2>/dev/null; then
+            ((installed_count++))
+        else
+            log_warning "Failed to install ${gem}, continuing anyway..."
+        fi
     done
+    
+    log_info "Successfully installed $installed_count out of $total_gems gems"
 }
 
 # Main function
@@ -194,38 +250,65 @@ main() {
     fi
 
     # Install RVM (Ruby Version Manager)
+    RUBY_INSTALLED=false
     if ! setup_rvm; then
-        log_warning "RVM setup encountered issues. Continuing with installation..."
+        log_warning "RVM setup encountered issues. Trying alternative installation methods..."
+        # Try alternative installation methods based on OS
+        if [[ "$OS" == "macOS" ]]; then
+            if install_ruby_homebrew; then
+                RUBY_INSTALLED=true
+            fi
+        elif [[ "$OS" == "Linux" ]]; then
+            if install_ruby_apt; then
+                RUBY_INSTALLED=true
+            fi
+        fi
     else
         log_success "RVM setup completed successfully."
+        
+        # Install latest stable Ruby version
+        if command_exists rvm; then
+            log_info "Installing latest stable Ruby version..."
+            
+            # Try to install latest stable version
+            if rvm install ruby --latest; then
+                # Use latest stable version as default
+                if rvm use ruby --latest --default; then
+                    RUBY_INSTALLED=true
+                else
+                    log_warning "Failed to set latest Ruby as default"
+                    # Try to use any installed Ruby version
+                    if rvm use ruby; then
+                        RUBY_INSTALLED=true
+                    fi
+                fi
+            else
+                log_warning "Failed to install latest Ruby version, trying system Ruby..."
+                if command_exists ruby; then
+                    log_success "System Ruby is available: $(ruby --version)"
+                    RUBY_INSTALLED=true
+                fi
+            fi
+        fi
+    fi
+    
+    # Verify Ruby installation
+    if command_exists ruby; then
+        log_success "Ruby $(ruby --version) installed successfully"
+        RUBY_INSTALLED=true
+    elif [ "$RUBY_INSTALLED" = false ]; then
+        log_error "Ruby installation failed using all available methods"
+        log_error "Please install Ruby manually and retry the setup"
+        exit 1
     fi
 
-    # Install latest stable Ruby version
-    if command_exists rvm; then
-        log_info "Installing latest stable Ruby version..."
-        
-        # Install latest stable version
-        if ! rvm install ruby --latest; then
-            handle_error "Failed to install Ruby"
-        fi
-        
-        # Use latest stable version as default
-        if ! rvm use ruby --latest --default; then
-            handle_error "Failed to set latest Ruby as default"
-        fi
-        
-        # Verify Ruby installation
-        if command_exists ruby; then
-            log_success "Ruby $(ruby --version) installed successfully"
-        else
-            handle_error "Ruby installation verification failed"
-        fi
-        
-        # Install essential Ruby gems
+    # Install essential Ruby gems
+    if command_exists gem; then
         log_info "Installing essential Ruby development tools..."
         install_essential_gems
     else
-        handle_error "RVM not available. Cannot install Ruby."
+        log_error "gem not available. Cannot install Ruby tools."
+        exit 1
     fi
 
     # Create Ruby project template
@@ -250,13 +333,20 @@ readonly NC='\033[0m' # No Color
 
 # Helper functions
 capitalize() {
-    python3 -c "import sys; print(sys.argv[1].capitalize())" "$1"
+    if command -v python3 &> /dev/null; then
+        python3 -c "import sys; print(sys.argv[1].capitalize())" "$1"
+    else
+        # Fallback to bash implementation
+        local first="${1:0:1}"
+        local rest="${1:1}"
+        echo "${first^^}${rest}"
+    fi
 }
 
 # Check required commands
-for cmd in ruby gem bundle; do
-    if ! command -v "$cmd" &> /dev/null; then
-        echo -e "${RED}Error: '$cmd' is not installed. Please install Ruby and Bundler.${NC}"
+for cmd in git; do
+    if ! command -v $cmd &> /dev/null; then
+        echo -e "${RED}Error: '$cmd' is not installed. Please install Git.${NC}"
         exit 1
     fi
 done
@@ -481,10 +571,13 @@ Metrics/BlockLength:
     - 'spec/**/*'
 EOF
 
-# Initialize bundle
-echo -e "${BLUE}Installing bundle dependencies...${NC}"
-bundle init
-bundle install
+# Initialize bundle if bundler is available
+if command -v bundle &> /dev/null; then
+    echo -e "${BLUE}Installing bundle dependencies...${NC}"
+    bundle install
+else
+    echo -e "${YELLOW}Bundler not found. Please install gems manually with: gem install bundler && bundle install${NC}"
+fi
 
 # Initialize Git repository
 echo -e "${BLUE}Initializing Git repository...${NC}"
@@ -504,7 +597,9 @@ EOL
     log_success "Ruby environment setup complete!"
     log_info "New commands available:"
     log_info "  rubyproject - Create a new Ruby project"
-    log_info "  rvm - Manage Ruby versions"
+    if command_exists rvm; then
+        log_info "  rvm - Manage Ruby versions"
+    fi
     log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
 }
 
@@ -520,4 +615,3 @@ trap cleanup EXIT
 
 # Run the main function
 main "$@"
-EOL
