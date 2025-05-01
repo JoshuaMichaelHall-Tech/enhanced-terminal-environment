@@ -134,3 +134,118 @@ Thu May  1 10:29:18 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;32mHTTPie already installed, skipping...[0m
 [0;34mInstalling cloud tools...[0m
 [0;32mawscli already installed, skipping...[0m
+[0;32mansible already installed, skipping...[0m
+[0;32mTerraform or OpenTofu already installed.[0m
+[0;32mTmux Plugin Manager already installed.[0m
+[0;32mOh My Zsh already installed.[0m
+[0;34mInstalling Zsh plugins...[0m
+[0;32mzsh-autosuggestions already installed.[0m
+[0;32mzsh-syntax-highlighting already installed.[0m
+[0;32mFZF already installed.[0m
+/Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh: line 360: getent: command not found
+[0;34mSetting Zsh as default shell...[0m
+Changing shell for jmh.
+[0;32mSystem setup complete![0m
+[0;33mNote: Some changes may require logging out and back in to take effect.[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
+
+[0;36m[1mSetting up Python environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+Thu May  1 10:30:42 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+[0;34mINFO: Setting up Python development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;32mSUCCESS: Python already installed: 3.13.3[0m
+[0;32mSUCCESS: pipx already installed[0m
+[0;32mSUCCESS: Poetry already installed[0m
+Updating Poetry version ...
+
+Using version ^2.1.2 for poetry
+
+Updating dependencies
+Resolving dependencies...
+
+No dependencies to install or update
+[0;34mINFO: Installing essential Python development tools...[0m
+[0;32mSUCCESS: ipython already installed, skipping...[0m
+[0;32mSUCCESS: black already installed, skipping...[0m
+[0;32mSUCCESS: flake8 already installed, skipping...[0m
+[0;32mSUCCESS: pylint already installed, skipping...[0m
+[0;32mSUCCESS: mypy already installed, skipping...[0m
+[0;32mSUCCESS: pytest already installed, skipping...[0m
+[0;32mSUCCESS: httpie already installed, skipping...[0m
+[0;34mINFO: Adding pytest-cov plugin to pytest...[0m
+⚠️ pytest-cov already seems to be injected in 'pytest'. Not modifying existing
+installation in '/Users/jmh/.local/pipx/venvs/pytest'. Pass '--force' to force
+installation.
+[0;34mINFO: Creating Python project template...[0m
+[0;34mINFO: Adding pyproject function to .zshrc[0m
+[0;32mSUCCESS: Python environment setup complete![0m
+[0;34mINFO: New commands available:[0m
+[0;34mINFO:   pyproject - Create a new Python project with virtual environment[0m
+[0;34mINFO:   poetry - Manage Python packages and dependencies[0m
+[0;34mINFO:   pipx - Install and run Python applications in isolated environments[0m
+[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
+
+[0;36m[1mSetting up Node.js/JavaScript environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
+Thu May  1 10:30:46 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
+[0;34mINFO: Setting up Node.js development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;32mSUCCESS: Node.js is already installed: v23.11.0[0m
+[0;34mINFO: Creating Node.js project template...[0m
+[0;34mINFO: Adding nodeproject function to .zshrc[0m
+[0;32mSUCCESS: Node.js environment setup complete![0m
+[0;34mINFO: New commands available:[0m
+[0;34mINFO:   nodeproject - Create a new Node.js project[0m
+[0;34mINFO: Node.js packages can be installed globally with: npm install -g <package-name>[0m
+[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
+
+[0;36m[1mSetting up Ruby environment[0m
+[0;36m==================================================[0m
+[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
+Thu May  1 10:30:47 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+[0;34mINFO: Setting up Ruby development environment...[0m
+[0;34mINFO: Detected macOS system[0m
+[0;34mINFO: Ruby is already installed: ruby 3.2.6 (2024-10-30 revision 63aeb018eb) [arm64-darwin24][0m
+[0;34mINFO: Installing essential Ruby gems...[0m
+[0;32mSUCCESS: bundler already installed, skipping...[0m
+[0;32mSUCCESS: pry already installed, skipping...[0m
+[0;32mSUCCESS: rubocop already installed, skipping...[0m
+[0;32mSUCCESS: solargraph already installed, skipping...[0m
+[0;32mSUCCESS: rake already installed, skipping...[0m
+[0;32mSUCCESS: rspec already installed, skipping...[0m
+[0;34mINFO: Creating Ruby project template...[0m
+[0;34mINFO: Adding rubyproject function to .zshrc[0m
+[0;32mSUCCESS: Ruby environment setup complete![0m
+[0;34mINFO: New commands available:[0m
+[0;34mINFO:   rubyproject - Create a new Ruby project[0m
+[0;33mWARNING: Restart your shell or run 'source ~/.zshrc' to use the new commands[0m
+[0;32mSUCCESS: Successfully executed: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
+
+[0;36m[1mCopying configuration files[0m
+[0;36m==================================================[0m
+[0;34mINFO: Copying Neovim configuration files...[0m
+[0;32mSUCCESS: Copied Neovim configuration files to /Users/jmh/.config/nvim[0m
+[0;34mINFO: Running enhanced Neovim setup...[0m
+[0;32mSUCCESS: Neovim enhanced setup completed successfully[0m
+[0;34mINFO: Copying Tmux configuration file...[0m
+[0;32mSUCCESS: Copied Tmux configuration file to /Users/jmh/.tmux.conf[0m
+[0;34mINFO: Copying Zsh configuration file...[0m
+[0;32mSUCCESS: Copied Zsh configuration file to /Users/jmh/.zshrc[0m
+[0;34mINFO: Copying Zsh aliases configuration file...[0m
+[0;32mSUCCESS: Copied Zsh aliases configuration file to /Users/jmh/.zsh/aliases.zsh[0m
+[0;34mINFO: Copying Git configuration file...[0m
+[0;32mSUCCESS: Copied Git configuration file to /Users/jmh/.gitconfig[0m
+
+[0;36m[1mSetting up custom functions[0m
+[0;36m==================================================[0m
+[0;34mINFO: Copying custom functions configuration file...[0m
+[0;32mSUCCESS: Copied custom functions configuration file to /Users/jmh/.local/bin/functions.sh[0m
+[0;32mSUCCESS: Functions sourcing already in .zshrc[0m
+
+[0;36m[1mInstallation Complete![0m
+[0;36m==================================================[0m

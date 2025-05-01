@@ -536,7 +536,15 @@ main() {
 
     # Set Zsh as default shell if it isn't already
     local current_shell
-    current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+    
+    if command -v getent &> /dev/null; then
+        # Linux approach
+        current_shell=$(getent passwd "$USER" | cut -d: -f7)
+    else
+        # macOS approach
+        current_shell=$(dscl . -read /Users/$USER UserShell | awk '{print $2}')
+    fi
+
     if [[ "$current_shell" != "$(which zsh)" ]]; then
         log_info "Setting Zsh as default shell..."
         register_zsh_shell
