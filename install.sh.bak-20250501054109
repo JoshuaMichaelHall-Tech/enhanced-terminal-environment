@@ -168,19 +168,9 @@ create_essential_directories() {
     
     for dir in "${dirs[@]}"; do
         if [[ ! -d "$dir" ]]; then
-            mkdir -p "$dir" && 
-            chmod 755 "$dir" && 
-            log_success "Created: $dir" || 
-            log_warning "Failed to create: $dir"
+            mkdir -p "$dir" && log_success "Created: $dir" || log_warning "Failed to create: $dir"
         else
             log_info "Directory already exists: $dir"
-            # Verify permissions
-            if [[ -w "$dir" ]]; then
-                chmod 755 "$dir" 2>/dev/null || true
-            else
-                log_warning "Directory exists but may not be writable: $dir"
-                chmod 755 "$dir" 2>/dev/null || log_warning "Failed to fix permissions for: $dir"
-            fi
         fi
     done
 }
