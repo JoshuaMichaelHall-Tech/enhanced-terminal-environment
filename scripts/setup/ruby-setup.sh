@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # Ruby development environment setup script
-# Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
-# Version: 3.0
+# Part of Enhanced Terminal Environment
 
-# Exit on error, undefined variables, and propagate pipe failures
 set -euo pipefail
 
 # Define colors for output
@@ -13,10 +11,7 @@ readonly YELLOW='\033[0;33m'
 readonly RED='\033[0;31m'
 readonly NC='\033[0m' # No Color
 
-# Script directory (resolving symlinks)
-readonly SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-
-# Log functions for consistent output
+# Log functions
 log_info() {
     echo -e "${BLUE}INFO: $1${NC}"
 }
@@ -33,13 +28,13 @@ log_error() {
     echo -e "${RED}ERROR: $1${NC}" >&2
 }
 
-# Error handling function
+# Error handling
 handle_error() {
     log_error "$1"
     exit 1
 }
 
-# Check if a command exists
+# Check if command exists
 command_exists() {
     command -v "$1" &> /dev/null
 }
@@ -56,7 +51,7 @@ create_templates_dir() {
     echo "$dir"
 }
 
-# Add function to .zshrc if it doesn't exist
+# Add function to .zshrc
 add_function_to_zshrc() {
     local function_name="$1"
     local function_path="$2"
@@ -72,26 +67,6 @@ ${function_name}() {
 EOF
     else
         log_success "${function_name} function already exists in .zshrc"
-    fi
-}
-
-# Install Ruby using Homebrew (macOS)
-install_ruby_homebrew() {
-    log_info "Installing Ruby via Homebrew..."
-    if brew install ruby; then
-        log_success "Ruby installed successfully via Homebrew"
-        # Add Ruby to PATH
-        if ! grep -q "/usr/local/opt/ruby/bin" "$HOME/.zshrc" && ! grep -q "/opt/homebrew/opt/ruby/bin" "$HOME/.zshrc"; then
-            if [[ -d "/usr/local/opt/ruby/bin" ]]; then
-                echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
-            elif [[ -d "/opt/homebrew/opt/ruby/bin" ]]; then
-                echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
-            fi
-        fi
-        return 0
-    else
-        log_error "Failed to install Ruby via Homebrew"
-        return 1
     fi
 }
 
@@ -115,14 +90,28 @@ main() {
         log_info "Ruby is already installed: $(ruby --version)"
     else
         if [[ "$OS" == "macOS" ]]; then
-            install_ruby_homebrew || handle_error "Failed to install Ruby"
+            log_info "Installing Ruby via Homebrew..."
+            if brew install ruby; then
+                log_success "Ruby installed successfully via Homebrew"
+                # Add Ruby to PATH
+                if ! grep -q "/usr/local/opt/ruby/bin" "$HOME/.zshrc" && ! grep -q "/opt/homebrew/opt/ruby/bin" "$HOME/.zshrc"; then
+                    if [[ -d "/usr/local/opt/ruby/bin" ]]; then
+                        echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
+                    elif [[ -d "/opt/homebrew/opt/ruby/bin" ]]; then
+                        echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> "$HOME/.zshrc"
+                    fi
+                fi
+            else
+                log_error "Failed to install Ruby via Homebrew"
+                exit 1
+            fi
         elif [[ "$OS" == "Linux" ]]; then
             log_info "Installing Ruby via apt..."
             sudo apt-get update && sudo apt-get install -y ruby-full || handle_error "Failed to install Ruby"
         fi
     fi
 
-    # Install essential Ruby gems if Ruby is available
+    # Install essential Ruby gems
     if command_exists gem; then
         log_info "Installing essential Ruby gems..."
         for gem_name in bundler pry rubocop solargraph rake rspec; do
@@ -275,3 +264,19 @@ git add .
 git commit -m "Initial commit" --no-verify
 
 echo -e "${GREEN}Ruby project $PROJECT_NAME created successfully!${NC}"
+EOL
+
+    # Make template executable
+    chmod +x "$template_script" || handle_error "Failed to make template script executable"
+
+    # Add function to .zshrc
+    add_function_to_zshrc "rubyproject" "$template_script"
+
+    log_success "Ruby environment setup complete!"
+    log_info "New commands available:"
+    log_info "  rubyproject - Create a new Ruby project"
+    log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
+}
+
+# Run the main function
+main "$@"
