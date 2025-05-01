@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Node.js/JavaScript development environment setup script
+# Node.js/JavaScript development environment setup script - Improved robustness
 # Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
-# Version: 3.0
+# Version: 4.0
 
 # Exit on error, undefined variables, and propagate pipe failures
 set -euo pipefail
@@ -44,102 +44,275 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Setup NVM (Node Version Manager)
+# Setup NVM (Node Version Manager) with better error handling
 setup_nvm() {
-    # Install NVM if not already installed
-    if [[ ! -d "$HOME/.nvm" ]]; then
-        log_info "Installing NVM (Node Version Manager)..."
+    # If NVM is already available in the current session, we're good
+    if command_exists nvm; then
+        log_success "NVM command already available in current session."
+        return 0
+    fi
+    
+    # Check if NVM directory exists (may be installed but not loaded in current session)
+    if [[ -d "$HOME/.nvm" ]]; then
+        log_success "NVM directory exists, loading NVM..."
         
-        # Download and run the NVM installer
-        if ! curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; then 
-            log_warning "Failed to install NVM using curl, trying wget..."
-            if ! wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; then
-                log_error "Failed to install NVM"
+        # Load NVM for current session
+        export NVM_DIR="$HOME/.nvm"
+        
+        # Source NVM scripts with safety checks
+        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            # shellcheck disable=SC1090
+            source "$NVM_DIR/nvm.sh" || {
+                log_warning "Failed to source nvm.sh, will attempt alternate approaches"
                 return 1
+            }
+            
+            # Load bash completion if available
+            if [[ -s "$NVM_DIR/bash_completion" ]]; then
+                # shellcheck disable=SC1090
+                source "$NVM_DIR/bash_completion" || log_warning "Failed to load NVM bash completion"
             fi
+            
+            # Verify NVM is now available
+            if command_exists nvm; then
+                log_success "NVM loaded successfully for current session"
+                return 0
+            else
+                log_warning "NVM not available after loading. Will attempt reinstallation."
+            fi
+        else
+            log_warning "NVM script not found at expected location"
+            # Try alternate installation method below
         fi
+    fi
+    
+    # If we're here, NVM needs to be installed or repaired
+    log_info "Installing NVM (Node Version Manager)..."
+    
+    # Clean up any previous failed installation
+    if [[ -d "$HOME/.nvm" ]]; then
+        log_warning "Cleaning up previous NVM installation..."
+        mv "$HOME/.nvm" "$HOME/.nvm.backup.$(date +%Y%m%d%H%M%S)" || log_warning "Failed to backup old NVM installation"
+    fi
+    
+    # Check if curl and/or wget are available
+    local install_cmd=""
+    if command_exists curl; then
+        install_cmd="curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
+    elif command_exists wget; then
+        install_cmd="wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
+    else
+        log_error "Neither curl nor wget is available. Cannot install NVM."
+        return 1
+    fi
+    
+    # Run the installation command
+    log_info "Downloading and running NVM installer..."
+    eval "$install_cmd" || {
+        log_error "Failed to install NVM"
+        return 1
+    }
+    
+    # Reload shell environment for NVM
+    export NVM_DIR="$HOME/.nvm"
+    
+    # Source NVM with error handling
+    if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+        # shellcheck disable=SC1090
+        source "$NVM_DIR/nvm.sh" || {
+            log_warning "Failed to source NVM after installation"
+            return 1
+        }
         
-        # Add NVM to shell profile if not already there
-        if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
-            cat >> "$HOME/.zshrc" << 'EOL'
+        # Verify NVM is now available
+        if command_exists nvm; then
+            log_success "NVM installed and loaded successfully"
+            
+            # Add to shell profile if not already there
+            if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
+                log_info "Adding NVM configuration to .zshrc"
+                cat >> "$HOME/.zshrc" << 'EOL'
 
 # NVM (Node Version Manager)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 EOL
-        fi
-        
-        # Load NVM for current session
-        export NVM_DIR="$HOME/.nvm"
-        # Use conditional check to ensure the files exist before sourcing them
-        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-            # shellcheck disable=SC1090
-            . "$NVM_DIR/nvm.sh"
-        else
-            log_warning "NVM script not found. You may need to restart your shell."
-            return 1
-        fi
-        
-        if [[ -s "$NVM_DIR/bash_completion" ]]; then
-            # shellcheck disable=SC1090
-            . "$NVM_DIR/bash_completion"
-        fi
-    else
-        log_success "NVM already installed."
-        
-        # Ensure NVM is loaded for the current session
-        export NVM_DIR="$HOME/.nvm"
-        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-            # shellcheck disable=SC1090
-            . "$NVM_DIR/nvm.sh"
-        else
-            log_warning "NVM script not found. You may need to restart your shell."
-            return 1
-        fi
-    fi
-    
-    # Verify NVM is properly loaded
-    if ! command_exists nvm; then
-        log_warning "NVM command not found after installation. You may need to restart your shell."
-        log_warning "After restart, run: 'nvm --version' to verify NVM is installed."
-        return 1
-    fi
-    
-    return 0
-}
-
-# Install Node.js using Homebrew as fallback
-install_node_homebrew() {
-    if command_exists brew; then
-        log_info "Installing Node.js via Homebrew..."
-        if brew install node; then
-            log_success "Node.js installed successfully via Homebrew"
+            else
+                log_success "NVM configuration already in .zshrc"
+            fi
+            
             return 0
         else
-            log_error "Failed to install Node.js via Homebrew"
+            log_warning "NVM command not available even after installation"
             return 1
         fi
     else
+        log_warning "NVM script not found after installation"
+        return 1
+    fi
+}
+
+# Install Node.js using NVM safely - fixes the "PROVIDED_VERSION" error
+install_node_nvm() {
+    log_info "Installing Node.js LTS version via NVM..."
+    
+    # Explicitly set default NVM version as a workaround for the "PROVIDED_VERSION" error
+    export NODE_VERSION=""
+    
+    # Try to install latest LTS version
+    if nvm install --lts; then
+        log_success "Node.js LTS installed successfully"
+        
+        # Explicitly use LTS
+        if nvm use --lts; then
+            log_success "Using Node.js LTS version"
+            
+            # Set as default - with explicit error handling for the alias command
+            if nvm alias default "lts/*"; then
+                log_success "Node.js LTS set as default"
+                return 0
+            else
+                log_warning "Failed to set Node.js LTS as default, but Node.js is installed"
+                # This is not a fatal error, Node is still installed
+                return 0
+            fi
+        else
+            log_warning "Failed to use Node.js LTS version, but installation succeeded"
+            # Try to at least use any available Node version
+            nvm use node >/dev/null 2>&1 || true
+            return 0
+        fi
+    else
+        log_warning "Failed to install Node.js LTS, trying stable version..."
+        
+        # Try stable version instead
+        if nvm install stable; then
+            log_success "Node.js stable version installed successfully"
+            
+            # Explicitly use stable
+            if nvm use stable; then
+                log_success "Using Node.js stable version"
+                
+                # Try to set as default
+                nvm alias default stable >/dev/null 2>&1 || log_warning "Failed to set Node.js stable as default"
+                return 0
+            else
+                log_warning "Failed to use Node.js stable version, but installation succeeded"
+                return 0
+            fi
+        else
+            log_error "Failed to install any Node.js version via NVM"
+            return 1
+        fi
+    fi
+}
+
+# Fallback: Install Node.js using Homebrew (macOS)
+install_node_homebrew() {
+    if ! command_exists brew; then
         log_warning "Homebrew not available for Node.js installation fallback"
         return 1
     fi
+    
+    log_info "Installing Node.js via Homebrew..."
+    if brew install node; then
+        log_success "Node.js installed successfully via Homebrew"
+        return 0
+    else
+        log_error "Failed to install Node.js via Homebrew"
+        return 1
+    fi
 }
 
-# Install Node.js using apt as fallback
+# Fallback: Install Node.js using apt (Linux)
 install_node_apt() {
     log_info "Installing Node.js via apt..."
-    # Set up Node.js repository
-    if curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -; then
-        if sudo apt-get install -y nodejs; then
-            log_success "Node.js installed successfully via apt"
+    
+    # Setup with nodesource (more recent versions)
+    log_info "Setting up Node.js repository..."
+    if command_exists curl; then
+        # Try with the official setup script
+        if ! curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -; then
+            log_warning "Failed to set up Node.js repository with nodesource script"
+            # Fall back to direct apt install (may be older version)
+            if sudo apt-get update && sudo apt-get install -y nodejs; then
+                log_success "Node.js installed via direct apt (may be older version)"
+                return 0
+            else
+                log_error "Failed to install Node.js via apt"
+                return 1
+            fi
+        fi
+    elif command_exists wget; then
+        # Try with wget
+        if ! wget -qO- https://deb.nodesource.com/setup_20.x | sudo -E bash -; then
+            log_warning "Failed to set up Node.js repository with nodesource script"
+            # Fall back to direct apt install (may be older version)
+            if sudo apt-get update && sudo apt-get install -y nodejs; then
+                log_success "Node.js installed via direct apt (may be older version)"
+                return 0
+            else
+                log_error "Failed to install Node.js via apt"
+                return 1
+            fi
+        fi
+    else
+        # If neither curl nor wget is available
+        log_warning "Neither curl nor wget is available, trying direct apt install"
+        if sudo apt-get update && sudo apt-get install -y nodejs; then
+            log_success "Node.js installed via direct apt (may be older version)"
             return 0
         else
             log_error "Failed to install Node.js via apt"
             return 1
         fi
+    fi
+    
+    # If repository setup succeeded, install Node.js
+    if sudo apt-get install -y nodejs; then
+        log_success "Node.js installed successfully via apt with nodesource repository"
+        return 0
     else
-        log_error "Failed to setup Node.js repository"
+        log_error "Failed to install Node.js via apt after repository setup"
+        return 1
+    fi
+}
+
+# Direct installation for MacOS (as last resort)
+install_node_direct_macos() {
+    log_info "Attempting direct Node.js installation from official installer..."
+    
+    # Create temporary directory
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    cd "$tmp_dir" || return 1
+    
+    # Download the macOS installer
+    log_info "Downloading Node.js package for macOS..."
+    if command_exists curl; then
+        curl -L -o node.pkg "https://nodejs.org/dist/latest-v18.x/node-v18.19.1.pkg" || return 1
+    elif command_exists wget; then
+        wget -O node.pkg "https://nodejs.org/dist/latest-v18.x/node-v18.19.1.pkg" || return 1
+    else
+        log_error "Neither curl nor wget available for download"
+        return 1
+    fi
+    
+    # Install the package
+    log_info "Installing Node.js package..."
+    sudo installer -pkg node.pkg -target / || return 1
+    
+    # Clean up
+    cd - || true
+    rm -rf "$tmp_dir"
+    
+    # Verify installation
+    if command_exists node; then
+        log_success "Node.js installed successfully via direct package"
+        return 0
+    else
+        log_error "Node.js installation failed or not found in PATH"
         return 1
     fi
 }
@@ -175,8 +348,11 @@ EOF
     fi
 }
 
-# Install Node.js packages globally
+# Install Node.js packages globally with error handling
 install_global_packages() {
+    log_info "Installing essential Node.js development tools..."
+    
+    # Define packages to install
     local packages=(
         "npm@latest"
         "yarn"
@@ -195,7 +371,10 @@ install_global_packages() {
     
     for package in "${packages[@]}"; do
         log_info "Installing ${package}..."
-        if npm install -g "$package" 2>/dev/null; then
+        
+        # Try to install with error handling
+        if npm install -g "$package" > /dev/null 2>&1; then
+            log_success "Installed ${package} successfully"
             ((installed_count++))
         else
             log_warning "Failed to install ${package}, continuing anyway..."
@@ -203,6 +382,21 @@ install_global_packages() {
     done
     
     log_info "Successfully installed $installed_count out of $total_packages packages"
+    
+    # Return success even if some packages failed
+    return 0
+}
+
+# Verify Node.js installation by checking actual commands
+verify_node_install() {
+    # Check for node command
+    if command_exists node; then
+        log_success "Node.js is installed: $(node --version)"
+        return 0
+    else
+        log_error "Node.js command not found in PATH"
+        return 1
+    fi
 }
 
 # Main function
@@ -220,13 +414,29 @@ main() {
         handle_error "Unsupported operating system: $OSTYPE"
     fi
 
-    # Install NVM (Node Version Manager)
+    # Install Node.js using multiple approaches if needed
     NODE_INSTALLED=false
-    if ! setup_nvm; then
-        log_warning "NVM setup encountered issues. Trying alternative installation methods..."
-        # Try alternative installation methods based on OS
+    
+    # First try with NVM
+    if setup_nvm; then
+        log_success "NVM setup completed successfully."
+        
+        # Try to install Node.js via NVM
+        if install_node_nvm; then
+            NODE_INSTALLED=true
+        else
+            log_warning "Node.js installation via NVM failed, trying alternate methods..."
+        fi
+    else
+        log_warning "NVM setup failed, trying alternate installation methods..."
+    fi
+    
+    # If NVM approach failed, try OS-specific methods
+    if [[ "$NODE_INSTALLED" == "false" ]]; then
         if [[ "$OS" == "macOS" ]]; then
             if install_node_homebrew; then
+                NODE_INSTALLED=true
+            elif install_node_direct_macos; then
                 NODE_INSTALLED=true
             fi
         elif [[ "$OS" == "Linux" ]]; then
@@ -234,43 +444,15 @@ main() {
                 NODE_INSTALLED=true
             fi
         fi
-    else
-        log_success "NVM setup completed successfully."
-        
-        # Install Node.js LTS version
-        if command_exists nvm; then
-            log_info "Installing Node.js LTS version..."
-            
-            # Install LTS version
-            if nvm install --lts; then
-                # Use LTS version
-                if nvm use --lts; then
-                    # Set as default
-                    if nvm alias default 'lts/*'; then
-                        NODE_INSTALLED=true
-                    else
-                        log_warning "Failed to set Node.js LTS as default"
-                    fi
-                else
-                    log_warning "Failed to use Node.js LTS version"
-                fi
-            else
-                log_warning "Failed to install Node.js LTS version, trying stable..."
-                # Try installing stable version as fallback
-                if nvm install stable && nvm use stable && nvm alias default stable; then
-                    NODE_INSTALLED=true
-                else
-                    log_warning "Failed to install Node.js stable version"
-                fi
-            fi
-        fi
     fi
     
-    # Verify Node.js installation
-    if command_exists node; then
-        log_success "Node.js $(node --version) installed successfully"
+    # Final verification that Node.js is installed and accessible
+    if ! NODE_INSTALLED && verify_node_install; then
         NODE_INSTALLED=true
-    elif [ "$NODE_INSTALLED" = false ]; then
+    fi
+    
+    # Check if any installation method succeeded
+    if [[ "$NODE_INSTALLED" == "false" ]]; then
         log_error "Node.js installation failed using all available methods"
         log_error "Please install Node.js manually and retry the setup"
         exit 1
@@ -278,10 +460,9 @@ main() {
 
     # Install essential global npm packages
     if command_exists npm; then
-        log_info "Installing essential Node.js development tools..."
         install_global_packages
     else
-        log_error "npm not available. Cannot install Node.js tools."
+        log_error "npm not available after Node.js installation. Something is wrong with the setup."
         exit 1
     fi
 
@@ -342,7 +523,7 @@ update_package_json() {
     
     # Check if jq is available
     if ! command -v jq &> /dev/null; then
-        echo -e "${YELLOW}jq not found. Skipping package.json modification.${NC}"
+        echo -e "${YELLOW}jq not found. Using alternative package.json modification method.${NC}"
         return 1
     fi
     
@@ -367,11 +548,11 @@ update_package_json() {
 
 # Update package.json with better defaults
 if ! update_package_json; then
-    echo -e "${YELLOW}Falling back to simple package.json modification${NC}"
-    # Simple modification without jq
-    sed -i.bak 's/"scripts": {/"scripts": {\n    "start": "node src\/index.js",\n    "test": "jest",\n    "lint": "eslint src\/**\/*.js",\n    "format": "prettier --write \\"src\/**\/*.js\\",/g' package.json
-    sed -i.bak 's/"author": ""/"author": "Joshua Michael Hall"/g' package.json
-    sed -i.bak 's/"license": "ISC"/"license": "MIT"/g' package.json
+    echo -e "${YELLOW}Falling back to direct package.json editing${NC}"
+    # Manual search and replace approach as fallback
+    sed -i.bak 's/"scripts": {/"scripts": {\n    "start": "node src\/index.js",\n    "test": "jest",\n    "lint": "eslint src\/**\/*.js",\n    "format": "prettier --write \\"src\/**\/*.js\\",/g' package.json || true
+    sed -i.bak 's/"author": ""/"author": "Joshua Michael Hall"/g' package.json || true 
+    sed -i.bak 's/"license": "ISC"/"license": "MIT"/g' package.json || true
     rm -f package.json.bak
 fi
 
@@ -538,13 +719,13 @@ npm install --save-dev \
   eslint \
   prettier \
   jest \
-  nodemon
+  nodemon || echo -e "${YELLOW}Failed to install some dev dependencies, you can install them manually later${NC}"
 
 # Initialize Git repository
 echo -e "${BLUE}Initializing Git repository...${NC}"
 git init
 git add .
-git commit -m "Initial commit" --no-verify
+git commit -m "Initial commit" --no-verify || echo -e "${YELLOW}Failed to create initial commit${NC}"
 
 echo -e "${GREEN}Node.js project $PROJECT_NAME created successfully!${NC}"
 EOL
@@ -564,15 +745,5 @@ EOL
     log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
 }
 
-# Trap for cleanup on script exit
-cleanup() {
-    local exit_code=$?
-    if [ $exit_code -ne 0 ]; then
-        log_error "Script failed with exit code $exit_code"
-    fi
-    exit $exit_code
-}
-trap cleanup EXIT
-
-# Run the main function
+# Run the main function with all arguments
 main "$@"
