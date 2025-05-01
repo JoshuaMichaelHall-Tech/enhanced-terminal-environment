@@ -149,6 +149,32 @@ copy_config_file() {
     fi
 }
 
+# Create all essential directories needed for installation
+create_essential_directories() {
+    log_info "Creating essential directories..."
+    
+    # List of essential directories
+    local dirs=(
+        "$HOME/.config/nvim"
+        "$HOME/.config/tmux"
+        "$HOME/.tmux/plugins"
+        "$HOME/.zsh"
+        "$HOME/.local/bin"
+        "$HOME/projects"
+        "$HOME/.local/share/python-templates"
+        "$HOME/.local/share/node-templates"
+        "$HOME/.local/share/ruby-templates"
+    )
+    
+    for dir in "${dirs[@]}"; do
+        if [[ ! -d "$dir" ]]; then
+            mkdir -p "$dir" && log_success "Created: $dir" || log_warning "Failed to create: $dir"
+        else
+            log_info "Directory already exists: $dir"
+        fi
+    done
+}
+
 # Ask user for language installation preferences
 prompt_language_setup() {
     log_header "Language Setup"
@@ -381,6 +407,9 @@ main() {
         show_summary
     fi
     
+        # Create all essential directories first
+        create_essential_directories
+
     # Core system setup
     if [[ "$CORE_INSTALLED" == "false" ]]; then
         log_header "Setting up core environment"
@@ -388,10 +417,12 @@ main() {
             CORE_INSTALLED=true
         fi
     fi
-    
-    # Language-specific setup based on user choices
+
+  # Language-specific setup based on user choices
     if [[ "$INSTALL_PYTHON" =~ ^[Yy]$ && "$PYTHON_INSTALLED" == "false" ]]; then
         log_header "Setting up Python environment"
+        # Ensure Python templates directory exists
+        mkdir -p "$HOME/.local/share/python-templates"
         if run_script "$SCRIPT_DIR/scripts/setup/python-setup.sh" "Python environment setup failed" "python"; then
             PYTHON_INSTALLED=true
         fi
@@ -399,6 +430,8 @@ main() {
     
     if [[ "$INSTALL_NODE" =~ ^[Yy]$ && "$NODE_INSTALLED" == "false" ]]; then
         log_header "Setting up Node.js/JavaScript environment"
+        # Ensure Node templates directory exists
+        mkdir -p "$HOME/.local/share/node-templates"
         if run_script "$SCRIPT_DIR/scripts/setup/node-setup.sh" "Node.js environment setup failed" "node"; then
             NODE_INSTALLED=true
         fi
@@ -406,10 +439,12 @@ main() {
     
     if [[ "$INSTALL_RUBY" =~ ^[Yy]$ && "$RUBY_INSTALLED" == "false" ]]; then
         log_header "Setting up Ruby environment"
+        # Ensure Ruby templates directory exists
+        mkdir -p "$HOME/.local/share/ruby-templates"
         if run_script "$SCRIPT_DIR/scripts/setup/ruby-setup.sh" "Ruby environment setup failed" "ruby"; then
             RUBY_INSTALLED=true
         fi
-    fi
+    fi 
     
     # Copy configuration files
     if [[ "$CONFIGS_COPIED" == "false" ]]; then
