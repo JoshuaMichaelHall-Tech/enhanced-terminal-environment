@@ -1,6 +1,10 @@
 # Enhanced Terminal Environment
 
-A comprehensive 12-month structured learning path for mastering terminal-based software development, designed for full-stack engineers working with Python, JavaScript, and Ruby.
+A comprehensive, structured learning path for mastering terminal-based software development, designed for full-stack engineers working with Python, JavaScript, and Ruby.
+
+![Terminal Environment](https://img.shields.io/badge/Terminal-Environment-blue)
+![Version](https://img.shields.io/badge/Version-1.0.0-green)
+![License](https://img.shields.io/badge/License-MIT-orange)
 
 ## Overview
 
@@ -40,10 +44,20 @@ This learning path is built on these core principles:
    cd enhanced-terminal-env
    ```
 
-2. Run the installation script:
+2. Run the pre-installation check (optional but recommended):
+   ```bash
+   ./pre-check.sh
+   ```
+
+3. Run the installation script:
    ```bash
    # For macOS or Linux
    ./install.sh
+   ```
+
+4. Verify your installation:
+   ```bash
+   ./verify.sh
    ```
 
 The script will install and configure the necessary tools with sensible defaults for modern software development.
@@ -137,21 +151,186 @@ The 12-month learning path is structured as follows:
 - Custom tmux sessions for JS development
 
 ### Ruby
-- RVM for version management
+- Gem management
 - Bundler for dependencies
 - IRB/Pry for interactive development
 - Rubocop for linting
 - Custom tmux sessions for Ruby development
 
-## Monthly Guides
+## Commands
 
-Each month includes:
+After installation, you'll have access to the following commands:
 
-- **Learning objectives** with specific skills to master
-- **Recommended resources** focused on that month's topics
-- **Practical exercises** to build muscle memory
-- **Project suggestions** that apply the skills learned
-- **Assessment criteria** to evaluate progress
+### Session Management
+- `mkpy <name>` - Create a Python development tmux session
+- `mkjs <name>` - Create a JavaScript development tmux session
+- `mkrb <name>` - Create a Ruby development tmux session
+- `mks <name>` - Create a generic development tmux session
+
+### Project Creation
+- `pyproject <name>` - Create a new Python project with virtual environment
+- `nodeproject <name>` - Create a new Node.js project
+- `rubyproject <name>` - Create a new Ruby project
+
+### Utility Functions
+- `vf` - Find and edit files with fuzzy search
+- `proj` - Navigate to projects with fuzzy search
+- `extract <file>` - Extract archives of various formats
+- `dsh` - Enter Docker container shell with fuzzy selection
+
+## Troubleshooting Guide
+
+### Common Installation Issues
+
+#### Python Environment (PEP 668) Issues
+
+**Symptoms:**
+- Errors about "externally-managed-environment"
+- pip installation failures
+- Permission issues with Python packages
+
+**Solutions:**
+1. Use the `fix-pip.sh` script included in the repository:
+   ```bash
+   ./fix-pip.sh
+   ```
+2. Manual fix - Install pipx using system package manager:
+   ```bash
+   # On macOS
+   brew install pipx
+   pipx ensurepath
+   # On Ubuntu/Debian
+   sudo apt install python3-pipx
+   pipx ensurepath
+   ```
+3. Restart the installation with recovery mode:
+   ```bash
+   ./install.sh --recover
+   ```
+
+#### Ruby Installation Problems
+
+**Symptoms:**
+- RVM installation fails with GPG key issues
+- Ruby gem installation errors
+
+**Solutions:**
+1. Use system Ruby instead of RVM:
+   ```bash
+   # On macOS
+   brew install ruby
+   echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
+   source ~/.zshrc
+   
+   # On Ubuntu/Debian
+   sudo apt update
+   sudo apt install ruby-full
+   ```
+2. Restart the installation with recovery mode:
+   ```bash
+   ./install.sh --recover
+   ```
+
+#### Node.js/NVM Issues
+
+**Symptoms:**
+- NVM installs but Node.js commands aren't recognized
+- npm package installations fail
+
+**Solutions:**
+1. Manually load NVM in current shell:
+   ```bash
+   export NVM_DIR="$HOME/.nvm"
+   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+   ```
+2. Install Node.js directly:
+   ```bash
+   nvm install --lts
+   nvm use --lts
+   ```
+
+#### Configuration File Conflicts
+
+**Symptoms:**
+- Warning messages about existing configuration files
+- Configuration not taking effect after installation
+
+**Solutions:**
+1. Back up your existing configurations:
+   ```bash
+   mkdir -p ~/.config-backup
+   cp ~/.zshrc ~/.tmux.conf ~/.config/nvim/init.lua ~/.config-backup/
+   ```
+2. Manually merge your custom settings with the new configurations after installation
+
+#### Tmux Plugin Manager Issues
+
+**Symptoms:**
+- Tmux plugins not loading
+- Errors when starting Tmux
+
+**Solutions:**
+1. Install TPM manually:
+   ```bash
+   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+   ```
+2. Inside Tmux, press `Ctrl-a` followed by `I` to install plugins
+
+### System-Specific Issues
+
+#### macOS
+
+- **Homebrew Permission Issues**: Run the Homebrew installer with proper permissions:
+  ```bash
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ```
+
+- **macOS Python Issues**: Use the latest Python from Homebrew:
+  ```bash
+  brew install python
+  ```
+
+#### Linux (Debian/Ubuntu)
+
+- **Missing Dependencies**: Ensure build tools are installed:
+  ```bash
+  sudo apt update
+  sudo apt install build-essential
+  ```
+
+- **Permission Issues**: Make sure your user has access to necessary directories:
+  ```bash
+  sudo chown -R $(whoami) ~/.config ~/.local
+  ```
+
+### Verification and Recovery
+
+If you encounter issues after installation:
+
+1. Run the verification script to identify problems:
+   ```bash
+   ./verify.sh
+   ```
+
+2. Run the installation in recovery mode to fix issues:
+   ```bash
+   ./install.sh --recover
+   ```
+
+3. For serious issues, you can reset the environment (warning: this will remove your configurations):
+   ```bash
+   rm -rf ~/.config/nvim ~/.tmux.conf ~/.zshrc.d
+   ```
+   Then run the installation again.
+
+### Getting Help
+
+If you continue experiencing issues:
+
+1. Check the installation log: `install_log.txt`
+2. Run the pre-check script before installation: `./pre-check.sh`
+3. Open an issue on the GitHub repository with your specific error messages
 
 ## Contributing
 
@@ -163,12 +342,6 @@ Contributions are welcome! If you'd like to improve the guides, fix issues, or s
 4. Push to the branch (`git push origin feature/your-feature`)
 5. Open a Pull Request
 
-## Disclaimer
-
-This software is provided "as is", without warranty of any kind, express or implied. The authors or copyright holders shall not be liable for any claim, damages or other liability arising from the use of the software.
-
-This project is a work in progress and may contain bugs or incomplete features. Users are encouraged to report any issues they encounter.
-
 ## Acknowledgements
 
 This project was developed with assistance from Anthropic's Claude AI assistant, which helped with:
@@ -178,6 +351,16 @@ This project was developed with assistance from Anthropic's Claude AI assistant,
 
 Claude was used as a development aid while all final implementation decisions and code review were performed by Joshua Michael Hall.
 
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind, express or implied. The authors or copyright holders shall not be liable for any claim, damages or other liability arising from the use of the software.
+
+This project is a work in progress and may contain bugs or incomplete features. Users are encouraged to report any issues they encounter.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+> "Master the basics. Then practice them every day without fail." - John C. Maxwell
