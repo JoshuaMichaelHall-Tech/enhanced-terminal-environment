@@ -1,3 +1,26 @@
+#!/bin/bash
+
+# Set colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Fixing Ruby setup script - revised version...${NC}"
+
+# Get the repository directory (run this from the repo root)
+REPO_DIR="$(pwd)"
+RUBY_SETUP_SCRIPT="${REPO_DIR}/scripts/setup/ruby-setup.sh"
+
+# Create backup of the original script if not already done
+if [[ ! -f "${RUBY_SETUP_SCRIPT}.bak.orig" ]]; then
+  cp "$RUBY_SETUP_SCRIPT" "${RUBY_SETUP_SCRIPT}.bak.orig"
+  echo -e "${GREEN}Created original backup at ${RUBY_SETUP_SCRIPT}.bak.orig${NC}"
+fi
+
+# Create a simpler fix - create a basic fallback function that just uses Homebrew
+cat > "$RUBY_SETUP_SCRIPT" << 'EOL'
 #!/usr/bin/env bash
 # Ruby development environment setup script
 # Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
@@ -275,3 +298,34 @@ git add .
 git commit -m "Initial commit" --no-verify
 
 echo -e "${GREEN}Ruby project $PROJECT_NAME created successfully!${NC}"
+EOL
+
+    # Make template executable
+    chmod +x "$template_script" || handle_error "Failed to make template script executable"
+
+    # Add function to .zshrc
+    add_function_to_zshrc "rubyproject" "$template_script"
+
+    log_success "Ruby environment setup complete!"
+    log_info "New commands available:"
+    log_info "  rubyproject - Create a new Ruby project"
+    log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
+}
+
+# Trap for cleanup on script exit
+cleanup() {
+    local exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        log_error "Script failed with exit code $exit_code"
+    fi
+    exit $exit_code
+}
+trap cleanup EXIT
+
+# Run the main function
+main "$@"
+EOL
+
+echo -e "${GREEN}Ruby setup script completely rewritten${NC}"
+echo -e "${YELLOW}Now run the recovery script:${NC}"
+echo -e "  ./install.sh --recover"

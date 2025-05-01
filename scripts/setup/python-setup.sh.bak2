@@ -48,8 +48,10 @@ command_exists() {
 create_templates_dir() {
     local dir="$HOME/.local/share/python-templates"
     
-    mkdir -p "$dir" || handle_error "Failed to create templates directory"
+    echo "Creating Python templates directory: $dir"
+    mkdir -p "$dir" || { echo -e "${RED}ERROR: Failed to create templates directory${NC}" >&2; return 1; }
     
+    # Explicitly return the directory path
     echo "$dir"
 }
 
