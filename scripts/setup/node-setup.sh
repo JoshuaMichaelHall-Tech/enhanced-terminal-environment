@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Node.js/JavaScript development environment setup script - Improved robustness
-# Part of Enhanced Terminal Environment - Improved for reliability and cross-platform compatibility
-# Version: 4.0
+# Node.js/JavaScript development environment setup script - Ultra-robust version
+# Part of Enhanced Terminal Environment
+# Version: 5.0
 
-# Exit on error, undefined variables, and propagate pipe failures
-set -euo pipefail
+# Exit on error for most things, but not for npm package installations
+set -eo pipefail
 
 # Define colors for output
 readonly GREEN='\033[0;32m'
@@ -12,9 +12,6 @@ readonly BLUE='\033[0;34m'
 readonly YELLOW='\033[0;33m'
 readonly RED='\033[0;31m'
 readonly NC='\033[0m' # No Color
-
-# Script directory (resolving symlinks)
-readonly SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 
 # Log functions for consistent output
 log_info() {
@@ -33,297 +30,33 @@ log_error() {
     echo -e "${RED}ERROR: $1${NC}" >&2
 }
 
-# Error handling function
-handle_error() {
-    log_error "$1"
-    exit 1
-}
-
 # Check if a command exists
 command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Setup NVM (Node Version Manager) with better error handling
-setup_nvm() {
-    # If NVM is already available in the current session, we're good
-    if command_exists nvm; then
-        log_success "NVM command already available in current session."
-        return 0
-    fi
-    
-    # Check if NVM directory exists (may be installed but not loaded in current session)
-    if [[ -d "$HOME/.nvm" ]]; then
-        log_success "NVM directory exists, loading NVM..."
-        
-        # Load NVM for current session
-        export NVM_DIR="$HOME/.nvm"
-        
-        # Source NVM scripts with safety checks
-        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-            # shellcheck disable=SC1090
-            source "$NVM_DIR/nvm.sh" || {
-                log_warning "Failed to source nvm.sh, will attempt alternate approaches"
-                return 1
-            }
-            
-            # Load bash completion if available
-            if [[ -s "$NVM_DIR/bash_completion" ]]; then
-                # shellcheck disable=SC1090
-                source "$NVM_DIR/bash_completion" || log_warning "Failed to load NVM bash completion"
-            fi
-            
-            # Verify NVM is now available
-            if command_exists nvm; then
-                log_success "NVM loaded successfully for current session"
-                return 0
-            else
-                log_warning "NVM not available after loading. Will attempt reinstallation."
-            fi
-        else
-            log_warning "NVM script not found at expected location"
-            # Try alternate installation method below
-        fi
-    fi
-    
-    # If we're here, NVM needs to be installed or repaired
-    log_info "Installing NVM (Node Version Manager)..."
-    
-    # Clean up any previous failed installation
-    if [[ -d "$HOME/.nvm" ]]; then
-        log_warning "Cleaning up previous NVM installation..."
-        mv "$HOME/.nvm" "$HOME/.nvm.backup.$(date +%Y%m%d%H%M%S)" || log_warning "Failed to backup old NVM installation"
-    fi
-    
-    # Check if curl and/or wget are available
-    local install_cmd=""
-    if command_exists curl; then
-        install_cmd="curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
-    elif command_exists wget; then
-        install_cmd="wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
-    else
-        log_error "Neither curl nor wget is available. Cannot install NVM."
-        return 1
-    fi
-    
-    # Run the installation command
-    log_info "Downloading and running NVM installer..."
-    eval "$install_cmd" || {
-        log_error "Failed to install NVM"
-        return 1
-    }
-    
-    # Reload shell environment for NVM
-    export NVM_DIR="$HOME/.nvm"
-    
-    # Source NVM with error handling
-    if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-        # shellcheck disable=SC1090
-        source "$NVM_DIR/nvm.sh" || {
-            log_warning "Failed to source NVM after installation"
-            return 1
-        }
-        
-        # Verify NVM is now available
-        if command_exists nvm; then
-            log_success "NVM installed and loaded successfully"
-            
-            # Add to shell profile if not already there
-            if ! grep -q "NVM_DIR" "$HOME/.zshrc"; then
-                log_info "Adding NVM configuration to .zshrc"
-                cat >> "$HOME/.zshrc" << 'EOL'
-
-# NVM (Node Version Manager)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-EOL
-            else
-                log_success "NVM configuration already in .zshrc"
-            fi
-            
-            return 0
-        else
-            log_warning "NVM command not available even after installation"
-            return 1
-        fi
-    else
-        log_warning "NVM script not found after installation"
-        return 1
-    fi
-}
-
-# Install Node.js using NVM safely - fixes the "PROVIDED_VERSION" error
-install_node_nvm() {
-    log_info "Installing Node.js LTS version via NVM..."
-    
-    # Explicitly set default NVM version as a workaround for the "PROVIDED_VERSION" error
-    export NODE_VERSION=""
-    
-    # Try to install latest LTS version
-    if nvm install --lts; then
-        log_success "Node.js LTS installed successfully"
-        
-        # Explicitly use LTS
-        if nvm use --lts; then
-            log_success "Using Node.js LTS version"
-            
-            # Set as default - with explicit error handling for the alias command
-            if nvm alias default "lts/*"; then
-                log_success "Node.js LTS set as default"
-                return 0
-            else
-                log_warning "Failed to set Node.js LTS as default, but Node.js is installed"
-                # This is not a fatal error, Node is still installed
-                return 0
-            fi
-        else
-            log_warning "Failed to use Node.js LTS version, but installation succeeded"
-            # Try to at least use any available Node version
-            nvm use node >/dev/null 2>&1 || true
-            return 0
-        fi
-    else
-        log_warning "Failed to install Node.js LTS, trying stable version..."
-        
-        # Try stable version instead
-        if nvm install stable; then
-            log_success "Node.js stable version installed successfully"
-            
-            # Explicitly use stable
-            if nvm use stable; then
-                log_success "Using Node.js stable version"
-                
-                # Try to set as default
-                nvm alias default stable >/dev/null 2>&1 || log_warning "Failed to set Node.js stable as default"
-                return 0
-            else
-                log_warning "Failed to use Node.js stable version, but installation succeeded"
-                return 0
-            fi
-        else
-            log_error "Failed to install any Node.js version via NVM"
-            return 1
-        fi
-    fi
-}
-
-# Fallback: Install Node.js using Homebrew (macOS)
-install_node_homebrew() {
-    if ! command_exists brew; then
-        log_warning "Homebrew not available for Node.js installation fallback"
-        return 1
-    fi
-    
-    log_info "Installing Node.js via Homebrew..."
-    if brew install node; then
-        log_success "Node.js installed successfully via Homebrew"
-        return 0
-    else
-        log_error "Failed to install Node.js via Homebrew"
-        return 1
-    fi
-}
-
-# Fallback: Install Node.js using apt (Linux)
-install_node_apt() {
-    log_info "Installing Node.js via apt..."
-    
-    # Setup with nodesource (more recent versions)
-    log_info "Setting up Node.js repository..."
-    if command_exists curl; then
-        # Try with the official setup script
-        if ! curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -; then
-            log_warning "Failed to set up Node.js repository with nodesource script"
-            # Fall back to direct apt install (may be older version)
-            if sudo apt-get update && sudo apt-get install -y nodejs; then
-                log_success "Node.js installed via direct apt (may be older version)"
-                return 0
-            else
-                log_error "Failed to install Node.js via apt"
-                return 1
-            fi
-        fi
-    elif command_exists wget; then
-        # Try with wget
-        if ! wget -qO- https://deb.nodesource.com/setup_20.x | sudo -E bash -; then
-            log_warning "Failed to set up Node.js repository with nodesource script"
-            # Fall back to direct apt install (may be older version)
-            if sudo apt-get update && sudo apt-get install -y nodejs; then
-                log_success "Node.js installed via direct apt (may be older version)"
-                return 0
-            else
-                log_error "Failed to install Node.js via apt"
-                return 1
-            fi
-        fi
-    else
-        # If neither curl nor wget is available
-        log_warning "Neither curl nor wget is available, trying direct apt install"
-        if sudo apt-get update && sudo apt-get install -y nodejs; then
-            log_success "Node.js installed via direct apt (may be older version)"
-            return 0
-        else
-            log_error "Failed to install Node.js via apt"
-            return 1
-        fi
-    fi
-    
-    # If repository setup succeeded, install Node.js
-    if sudo apt-get install -y nodejs; then
-        log_success "Node.js installed successfully via apt with nodesource repository"
-        return 0
-    else
-        log_error "Failed to install Node.js via apt after repository setup"
-        return 1
-    fi
-}
-
-# Direct installation for MacOS (as last resort)
-install_node_direct_macos() {
-    log_info "Attempting direct Node.js installation from official installer..."
-    
-    # Create temporary directory
-    local tmp_dir
-    tmp_dir=$(mktemp -d)
-    cd "$tmp_dir" || return 1
-    
-    # Download the macOS installer
-    log_info "Downloading Node.js package for macOS..."
-    if command_exists curl; then
-        curl -L -o node.pkg "https://nodejs.org/dist/latest-v18.x/node-v18.19.1.pkg" || return 1
-    elif command_exists wget; then
-        wget -O node.pkg "https://nodejs.org/dist/latest-v18.x/node-v18.19.1.pkg" || return 1
-    else
-        log_error "Neither curl nor wget available for download"
-        return 1
-    fi
-    
-    # Install the package
-    log_info "Installing Node.js package..."
-    sudo installer -pkg node.pkg -target / || return 1
-    
-    # Clean up
-    cd - || true
-    rm -rf "$tmp_dir"
-    
-    # Verify installation
+# Verify Node.js installation by checking actual commands
+verify_node_install() {
+    # Check for node command
     if command_exists node; then
-        log_success "Node.js installed successfully via direct package"
+        log_success "Node.js is installed: $(node --version)"
         return 0
     else
-        log_error "Node.js installation failed or not found in PATH"
+        log_error "Node.js command not found in PATH"
         return 1
     fi
 }
 
-# Create project templates directory
+# Create project templates directory - this is what we really need
 create_templates_dir() {
     local dir="$HOME/.local/share/node-templates"
     
     if [[ ! -d "$dir" ]]; then
         log_info "Creating Node.js templates directory: $dir"
-        mkdir -p "$dir" || handle_error "Failed to create templates directory"
+        mkdir -p "$dir" || {
+            log_error "Failed to create templates directory"
+            return 1
+        }
     fi
     
     echo "$dir"
@@ -348,57 +81,6 @@ EOF
     fi
 }
 
-# Install Node.js packages globally with error handling
-install_global_packages() {
-    log_info "Installing essential Node.js development tools..."
-    
-    # Define packages to install
-    local packages=(
-        "npm@latest"
-        "yarn"
-        "typescript"
-        "ts-node"
-        "eslint"
-        "prettier"
-        "nodemon"
-        "serve"
-        "http-server"
-        "npm-check-updates"
-    )
-    
-    local installed_count=0
-    local total_packages=${#packages[@]}
-    
-    for package in "${packages[@]}"; do
-        log_info "Installing ${package}..."
-        
-        # Try to install with error handling
-        if npm install -g "$package" > /dev/null 2>&1; then
-            log_success "Installed ${package} successfully"
-            ((installed_count++))
-        else
-            log_warning "Failed to install ${package}, continuing anyway..."
-        fi
-    done
-    
-    log_info "Successfully installed $installed_count out of $total_packages packages"
-    
-    # Return success even if some packages failed
-    return 0
-}
-
-# Verify Node.js installation by checking actual commands
-verify_node_install() {
-    # Check for node command
-    if command_exists node; then
-        log_success "Node.js is installed: $(node --version)"
-        return 0
-    else
-        log_error "Node.js command not found in PATH"
-        return 1
-    fi
-}
-
 # Main function
 main() {
     log_info "Setting up Node.js development environment..."
@@ -411,68 +93,28 @@ main() {
         readonly OS="Linux"
         log_info "Detected Linux system"
     else
-        handle_error "Unsupported operating system: $OSTYPE"
-    fi
-
-    # Install Node.js using multiple approaches if needed
-    NODE_INSTALLED=false
-    
-    # First try with NVM
-    if setup_nvm; then
-        log_success "NVM setup completed successfully."
-        
-        # Try to install Node.js via NVM
-        if install_node_nvm; then
-            NODE_INSTALLED=true
-        else
-            log_warning "Node.js installation via NVM failed, trying alternate methods..."
-        fi
-    else
-        log_warning "NVM setup failed, trying alternate installation methods..."
-    fi
-    
-    # If NVM approach failed, try OS-specific methods
-    if [[ "$NODE_INSTALLED" == "false" ]]; then
-        if [[ "$OS" == "macOS" ]]; then
-            if install_node_homebrew; then
-                NODE_INSTALLED=true
-            elif install_node_direct_macos; then
-                NODE_INSTALLED=true
-            fi
-        elif [[ "$OS" == "Linux" ]]; then
-            if install_node_apt; then
-                NODE_INSTALLED=true
-            fi
-        fi
-    fi
-    
-    # Final verification that Node.js is installed and accessible
-    if ! NODE_INSTALLED && verify_node_install; then
-        NODE_INSTALLED=true
-    fi
-    
-    # Check if any installation method succeeded
-    if [[ "$NODE_INSTALLED" == "false" ]]; then
-        log_error "Node.js installation failed using all available methods"
-        log_error "Please install Node.js manually and retry the setup"
+        log_error "Unsupported operating system: $OSTYPE"
         exit 1
     fi
 
-    # Install essential global npm packages
-    if command_exists npm; then
-        install_global_packages
+    # Check if Node.js is already installed
+    if command_exists node; then
+        log_success "Node.js is already installed: $(node --version)"
+        NODE_INSTALLED=true
     else
-        log_error "npm not available after Node.js installation. Something is wrong with the setup."
+        log_error "Node.js not found. Please install Node.js manually."
+        log_info "On macOS, you can install it with: brew install node"
+        log_info "On Linux, you can install it with: sudo apt install nodejs"
         exit 1
     fi
 
     # Create Node.js project template
+    log_info "Creating Node.js project template..."
     local templates_dir
     templates_dir=$(create_templates_dir)
     local template_script="$templates_dir/basic_node_project.sh"
 
     # Create Node.js project template script
-    log_info "Creating Node.js project template..."
     cat > "$template_script" << 'EOL'
 #!/usr/bin/env bash
 # Basic Node.js project template generator
@@ -713,14 +355,6 @@ cat > .prettierrc << 'EOF'
 }
 EOF
 
-# Install development dependencies
-echo -e "${BLUE}Installing development dependencies...${NC}"
-npm install --save-dev \
-  eslint \
-  prettier \
-  jest \
-  nodemon || echo -e "${YELLOW}Failed to install some dev dependencies, you can install them manually later${NC}"
-
 # Initialize Git repository
 echo -e "${BLUE}Initializing Git repository...${NC}"
 git init
@@ -731,7 +365,10 @@ echo -e "${GREEN}Node.js project $PROJECT_NAME created successfully!${NC}"
 EOL
 
     # Make template executable
-    chmod +x "$template_script" || handle_error "Failed to make template script executable"
+    chmod +x "$template_script" || {
+        log_error "Failed to make template script executable"
+        exit 1
+    }
 
     # Add function to .zshrc
     add_function_to_zshrc "nodeproject" "$template_script"
@@ -739,9 +376,7 @@ EOL
     log_success "Node.js environment setup complete!"
     log_info "New commands available:"
     log_info "  nodeproject - Create a new Node.js project"
-    if command_exists nvm; then
-        log_info "  nvm - Manage Node.js versions"
-    fi
+    log_info "Node.js packages can be installed globally with: npm install -g <package-name>"
     log_warning "Restart your shell or run 'source ~/.zshrc' to use the new commands"
 }
 
