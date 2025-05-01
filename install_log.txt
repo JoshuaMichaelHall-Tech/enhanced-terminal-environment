@@ -1,10 +1,8 @@
 Enhanced Terminal Environment Installation Log
-Date: Thu May  1 10:20:24 CDT 2025
+Date: Thu May  1 07:56:33 CDT 2025
 User: jmh
-System: Darwin Mac.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:32:05 PDT 2025; root:xnu-11417.101.15~117/RELEASE_ARM64_T8132 arm64
+System: Darwin MacBookPro.lan 24.4.0 Darwin Kernel Version 24.4.0: Fri Apr 11 18:28:23 PDT 2025; root:xnu-11417.101.15~117/RELEASE_X86_64 x86_64
 ----------------------------------------
-[0;33mWARNING: Previous installation detected.[0m
-Backup configuration: n
 
 [0;36m[1mLanguage Setup[0m
 [0;36m==================================================[0m
@@ -46,60 +44,7 @@ Continue with installation: y
 [0;36m[1mSetting up core environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-Thu May  1 10:20:30 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
-[0;34mDetected macOS system[0m
-[0;34mCreating configuration directories...[0m
-[0;34mCreating directory: /Users/jmh/.config/nvim[0m
-[0;34mCreating directory: /Users/jmh/.config/tmux[0m
-[0;34mCreating directory: /Users/jmh/.tmux/plugins[0m
-[0;34mCreating directory: /Users/jmh/.zsh[0m
-[0;34mCreating directory: /Users/jmh/.local/bin[0m
-[0;34mCreating directory: /Users/jmh/projects[0m
-[0;34mInstalling Homebrew...[0m
-==> Checking for `sudo` access (which may request your password)...
-==> This script will install:
-/opt/homebrew/bin/brew
-/opt/homebrew/share/doc/homebrew
-/opt/homebrew/share/man/man1/brew.1
-/opt/homebrew/share/zsh/site-functions/_brew
-/opt/homebrew/etc/bash_completion.d/brew
-/opt/homebrew
-
-Press RETURN/ENTER to continue or any other key to abort:
-[0;31mERROR: Core environment setup failed[0m
-[0;33mWARNING: Check /Users/jmh/repos_tech/terminal-env/install_log.txt for more details.[0m
-User choice on continuing: n
-[0;34mINFO: Installation aborted by user.[0m
-
-[0;36m[1mRunning in recovery mode[0m
-[0;36m==================================================[0m
-[0;34mINFO: Attempting to resume a previous installation...[0m
-[0;34mINFO: Found previous installation log at: /Users/jmh/repos_tech/terminal-env/install_log.txt[0m
-[0;34mINFO: Creating essential directories...[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.config/nvim[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.config/tmux[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.tmux/plugins[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.zsh[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.local/bin[0m
-[0;34mINFO: Directory already exists: /Users/jmh/projects[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.local/share/python-templates[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.local/share/node-templates[0m
-[0;34mINFO: Directory already exists: /Users/jmh/.local/share/ruby-templates[0m
-
-[0;36m[1mSetting up architecture compatibility[0m
-[0;36m==================================================[0m
-[0;34mINFO: Detected Apple Silicon Mac (arm64)[0m
-[0;34mINFO: Setting up modular profile structure...[0m
-[0;34mINFO: .zprofile already exists[0m
-[0;34mINFO: Configuring path management...[0m
-[0;32mSUCCESS: Path management configured successfully[0m
-[0;34mINFO: Configuring tmux compatibility...[0m
-[0;32mSUCCESS: Tmux compatibility configured successfully[0m
-
-[0;36m[1mSetting up core environment[0m
-[0;36m==================================================[0m
-[0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh[0m
-Thu May  1 10:29:18 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
+Thu May  1 07:56:39 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/utils/system-setup.sh
 [0;34mDetected macOS system[0m
 [0;34mCreating configuration directories...[0m
 [0;34mCreating directory: /Users/jmh/.config/nvim[0m
@@ -152,20 +97,16 @@ Changing shell for jmh.
 [0;36m[1mSetting up Python environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh[0m
-Thu May  1 10:30:42 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
+Thu May  1 07:58:17 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/python-setup.sh
 [0;34mINFO: Setting up Python development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;32mSUCCESS: Python already installed: 3.13.3[0m
 [0;32mSUCCESS: pipx already installed[0m
-[0;32mSUCCESS: Poetry already installed[0m
-Updating Poetry version ...
+[0;34mINFO: Installing Poetry (Python package manager)...[0m
+Retrieving Poetry metadata
 
-Using version ^2.1.2 for poetry
-
-Updating dependencies
-Resolving dependencies...
-
-No dependencies to install or update
+The latest version (2.1.2) is already installed.
+[0;34mINFO: You may need to restart your shell or run 'source ~/.zshrc' for Poetry to be available[0m
 [0;34mINFO: Installing essential Python development tools...[0m
 [0;32mSUCCESS: ipython already installed, skipping...[0m
 [0;32mSUCCESS: black already installed, skipping...[0m
@@ -191,7 +132,7 @@ installation.
 [0;36m[1mSetting up Node.js/JavaScript environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh[0m
-Thu May  1 10:30:46 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
+Thu May  1 07:58:19 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/node-setup.sh
 [0;34mINFO: Setting up Node.js development environment...[0m
 [0;34mINFO: Detected macOS system[0m
 [0;32mSUCCESS: Node.js is already installed: v23.11.0[0m
@@ -207,17 +148,29 @@ Thu May  1 10:30:46 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mSetting up Ruby environment[0m
 [0;36m==================================================[0m
 [0;34mINFO: Running: /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh[0m
-Thu May  1 10:30:47 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
+Thu May  1 07:58:19 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts/setup/ruby-setup.sh
 [0;34mINFO: Setting up Ruby development environment...[0m
 [0;34mINFO: Detected macOS system[0m
-[0;34mINFO: Ruby is already installed: ruby 3.2.6 (2024-10-30 revision 63aeb018eb) [arm64-darwin24][0m
+[0;34mINFO: Ruby is already installed: ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.x86_64-darwin24][0m
 [0;34mINFO: Installing essential Ruby gems...[0m
 [0;32mSUCCESS: bundler already installed, skipping...[0m
-[0;32mSUCCESS: pry already installed, skipping...[0m
-[0;32mSUCCESS: rubocop already installed, skipping...[0m
-[0;32mSUCCESS: solargraph already installed, skipping...[0m
+[0;34mINFO: Installing pry...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install pry, continuing anyway...[0m
+[0;34mINFO: Installing rubocop...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install rubocop, continuing anyway...[0m
+[0;34mINFO: Installing solargraph...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install solargraph, continuing anyway...[0m
 [0;32mSUCCESS: rake already installed, skipping...[0m
-[0;32mSUCCESS: rspec already installed, skipping...[0m
+[0;34mINFO: Installing rspec...[0m
+ERROR:  While executing gem ... (Gem::FilePermissionError)
+    You don't have write permissions for the /Library/Ruby/Gems/2.6.0 directory.
+[0;33mWARNING: Failed to install rspec, continuing anyway...[0m
 [0;34mINFO: Creating Ruby project template...[0m
 [0;34mINFO: Adding rubyproject function to .zshrc[0m
 [0;32mSUCCESS: Ruby environment setup complete![0m
@@ -229,11 +182,13 @@ Thu May  1 10:30:47 CDT 2025: Running /Users/jmh/repos_tech/terminal-env/scripts
 [0;36m[1mCopying configuration files[0m
 [0;36m==================================================[0m
 [0;34mINFO: Copying Neovim configuration files...[0m
-[0;32mSUCCESS: Copied Neovim configuration files to /Users/jmh/.config/nvim[0m
+[0;31mERROR: Failed to copy Neovim configuration files[0m
+[0;33mWARNING: Failed to copy Neovim configuration, but continuing installation[0m
 [0;34mINFO: Running enhanced Neovim setup...[0m
-[0;32mSUCCESS: Neovim enhanced setup completed successfully[0m
+[0;33mWARNING: Neovim enhanced setup had issues, but continuing installation[0m
 [0;34mINFO: Copying Tmux configuration file...[0m
-[0;32mSUCCESS: Copied Tmux configuration file to /Users/jmh/.tmux.conf[0m
+[0;31mERROR: Failed to copy Tmux configuration file[0m
+[0;33mWARNING: Failed to copy Tmux configuration, but continuing installation[0m
 [0;34mINFO: Copying Zsh configuration file...[0m
 [0;32mSUCCESS: Copied Zsh configuration file to /Users/jmh/.zshrc[0m
 [0;34mINFO: Copying Zsh aliases configuration file...[0m

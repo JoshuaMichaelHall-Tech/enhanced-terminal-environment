@@ -438,7 +438,7 @@ dstop() {
     if ! command_exists docker; then
         log_error "Docker is not installed"
         return 1
-    }
+    fi
     
     # Get running containers
     local containers
@@ -450,7 +450,7 @@ dstop() {
         if ! docker stop $containers; then
             log_error "Failed to stop containers"
             return 1
-        }
+        fi
         log_success "All containers stopped"
     else
         log_info "No running containers found"
@@ -567,7 +567,7 @@ dsh() {
     if ! command_exists docker; then
         log_error "Docker is not installed"
         return 1
-    }
+    fi
     
     # Check if fzf is available
     if ! command_exists fzf; then
@@ -1014,7 +1014,7 @@ pgbackup() {
     if ! command_exists pg_dump; then
         log_error "pg_dump is not installed"
         return 1
-    }
+    fi
     
     log_info "Creating PostgreSQL backup of $db_name to $output_file..."
     
