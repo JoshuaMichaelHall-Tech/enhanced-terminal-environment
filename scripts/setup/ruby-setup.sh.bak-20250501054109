@@ -133,7 +133,7 @@ main() {
 
     # Create simplified Ruby project template
     log_info "Creating Ruby project template..."
-    cat > "$template_script" << 'EOF'
+    cat > "$template_script" << 'EOL'
 #!/usr/bin/env bash
 # Basic Ruby project template generator
 
@@ -173,7 +173,7 @@ mkdir -p spec
 mkdir -p bin
 
 # Create Gemfile
-cat > Gemfile << 'EOFINNER'
+cat > Gemfile << 'EOF'
 source 'https://rubygems.org'
 
 group :development, :test do
@@ -182,10 +182,10 @@ group :development, :test do
   gem 'solargraph', '~> 0.44'
   gem 'pry', '~> 0.14'
 end
-EOFINNER
+EOF
 
 # Create main library file
-cat > lib/${SANITIZED_NAME}.rb << EOFINNER
+cat > lib/${SANITIZED_NAME}.rb << EOF
 # Main module for ${PROJECT_NAME}
 module ${CAPITALIZED_NAME}
   VERSION = '0.1.0'.freeze
@@ -195,22 +195,22 @@ module ${CAPITALIZED_NAME}
     puts "Hello from ${PROJECT_NAME}!"
   end
 end
-EOFINNER
+EOF
 
 # Create executable
 mkdir -p bin
-cat > bin/${PROJECT_NAME} << EOFINNER
+cat > bin/${PROJECT_NAME} << EOF
 #!/usr/bin/env ruby
 
 require_relative '../lib/${SANITIZED_NAME}'
 
 # Add command-line handling code here
 ${CAPITALIZED_NAME}.hello
-EOFINNER
+EOF
 chmod +x bin/${PROJECT_NAME}
 
 # Create README
-cat > README.md << EOFINNER
+cat > README.md << EOF
 # ${CAPITALIZED_NAME}
 
 A Ruby project.
@@ -255,7 +255,7 @@ Claude was used as a development aid while all final implementation decisions an
 This software is provided "as is", without warranty of any kind, express or implied. The authors or copyright holders shall not be liable for any claim, damages or other liability arising from the use of the software.
 
 This project is a work in progress and may contain bugs or incomplete features. Users are encouraged to report any issues they encounter.
-EOFINNER
+EOF
 
 # Initialize Git repository
 echo -e "${BLUE}Initializing Git repository...${NC}"
@@ -264,7 +264,7 @@ git add .
 git commit -m "Initial commit" --no-verify
 
 echo -e "${GREEN}Ruby project $PROJECT_NAME created successfully!${NC}"
-EOF
+EOL
 
     # Make template executable
     chmod +x "$template_script" || handle_error "Failed to make template script executable"
