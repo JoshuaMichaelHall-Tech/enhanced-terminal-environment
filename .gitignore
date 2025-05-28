@@ -120,3 +120,6 @@ install_log.txt
 user_settings.json
 *.bak*
 *.tmp
+# Obsidian
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
